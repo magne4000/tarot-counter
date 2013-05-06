@@ -559,16 +559,26 @@ function cleanError(){
 
 function addLine(){
 	if (line === 0){
-		if ($("#player_1").val() == "")
-			return printError("Joueur 1 vide");
-		if ($("#player_2").val() == "")
-			return printError("Joueur 2 vide");
-		if ($("#player_3").val() == "")
-			return printError("Joueur 3 vide");
-		if ($("#player_4").size() !== 0 && $("#player_4").val() == "")
-			return printError("Joueur 4 vide");
-		if ($("#player_5").size() !== 0 && $("#player_5").val() == "")
-			return printError("Joueur 5 vide");
+		if ($("#player_1").val() == ""){
+			printError("Joueur 1 vide");
+		    return;
+		}
+		if ($("#player_2").val() == ""){
+			printError("Joueur 2 vide");
+			return;
+		}
+		if ($("#player_3").val() == ""){
+			printError("Joueur 3 vide");
+			return;
+		}
+		if ($("#player_4").size() !== 0 && $("#player_4").val() == ""){
+			printError("Joueur 4 vide");
+			return;
+		}
+		if ($("#player_5").size() !== 0 && $("#player_5").val() == ""){
+			printError("Joueur 5 vide");
+			return;
+		}
 
 		updatePlayers();
 		nbJoueurs = $("#selectNbJoueurs").val();
@@ -591,7 +601,7 @@ function addLine(){
 	}else{
 		//Calcul des points de la ligne courante avant ajout de la nouvelle
 		if (!calculerPoints())
-			return false;
+			return;
 	}
 	
 	line++;
