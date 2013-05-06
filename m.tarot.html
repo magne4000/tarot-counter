@@ -110,7 +110,7 @@ function calculerPoints(page){
 
 	//Vérifications
 	if (quiapris == ""){
-		return printError("La champ “Qui à pris ?” doit être remplie.");
+		return printError("Le champ “Qui à pris ?” doit être renseigné.");
 	}
 	if (poignee1annonceepar && typedepoignee1 == 0){
 		return printError("Le joueur doit être renseigné pour la poignée 1.");
@@ -284,22 +284,17 @@ function getScorePlayer(player, preneur, appel, nbPtsJoueurPreneur, nbPtsJoueurA
 	return nbPtsJoueurDefense;
 };
 
-function printError(msg){
-	$("#error").html(msg);
-	return false;
-};
-
 function newPage(){
 	//Mise à jour du calcul des points
 	if (calculerPoints(nbPages)){
 		//Modification de la page que l'on quitte
-		$('#partie_'+nbPages+' [data-role="header"] a:last').text('Partie suivante');
-		$('#partie_'+nbPages+' .newpage').removeClass('newpage');
+		$('#partie_'+nbPages+' .newpage').removeClass('newpage').addClass('next');
 		nbPages = nbPages + 1;
 		//Creation de la nouvelle page
 		var newPartie = $partie_factory.clone();
 		newPartie.find('[data-role="header"] h1').text('Partie '+nbPages);
 		newPartie.attr('id', 'partie_'+nbPages);
+		newPartie.data('partie', nbPages);
 		newPartie.find('[id$="_1"]').each(function(){
 			$(this).attr('id', $(this).attr('id').substring(0, $(this).attr('id').length-1)+nbPages);
 		});
@@ -308,7 +303,7 @@ function newPage(){
 		});
 		//Affichage de la nouvelle page
         newPartie.appendTo('body').trigger('create');
-		$.mobile.changePage('#partie_'+nbPages);
+		$.mobile.changePage('#partie_'+nbPages, {transition: "slide"});
 	}
 }
 
@@ -345,16 +340,14 @@ function initGame(){
 
 function printError(msg){
 	$('.warn').text(msg);
-	$.mobile.changePage('#error', {transition: "slideup"});
+	$('#error').popup("open");
 	return false;
 }
 
 $(document).ready(function() {
-	$('#error').dialog();
-	$('#error').on('click', function(){
-		$(this).dialog('close');
-	});
-	
+    
+	$('#error').popup();
+    
 	//Redirection sur la page d'accueil au chargement
 	var urlSplit = document.URL.split("#");
 	if (urlSplit[1]) {
@@ -393,14 +386,20 @@ $(document).ready(function() {
 		$.mobile.changePage('#partie_1');
 	});
 	
-	$(document).on('click', '[data-role="header"] a:first', function(){
-		$.mobile.changePage($(this).parent('[data-role="page"]').prev());
+	$(document).on('click', '.prev', function(e){
+		$.mobile.changePage('#partie_'+(parseInt($(e.currentTarget).parent().parent().data("partie"), 10) - 1), {transition: "slide", reverse: true});
 	});
+	
+	//Page suivante
+    $(document).on('click', '.next', function(e){
+        $.mobile.changePage('#partie_'+(parseInt($(e.currentTarget).parent().parent().data("partie"), 10) + 1), {transition: "slide"});
+    });
 	
 	//Nouvelle page
 	$(document).on('click', '.newpage', function(){
 		newPage();
 	});
+	
 });
 </script>
 </head>
@@ -461,21 +460,10 @@ $(document).ready(function() {
 </div>
 <!-- /scores -->
 
-<!-- error -->
-<div data-role="page" class="type-interior" id="error">
-		<div data-role="header">
-		<h1>Erreur</h1>
-	</div><!-- /header -->
-	<div data-role="content">
-		<div class="warn"></div>
-	</div><!-- /content -->
-</div>
-<!-- /error -->
-
 <!-- partie_1 -->
-<div data-role="page" class="type-interior" id="partie_1">
+<div data-role="page" class="type-interior" id="partie_1" data-partie="1" class="partie">
 	<div data-role="header">
-		<a data-icon="arrow-l">Partie précédente</a>
+		<a data-icon="arrow-l" class="prev">Partie précédente</a>
 		<h1>Partie n°1</h1>
 		<a data-icon="arrow-r" data-iconpos="right" class="newpage">Partie suivante</a>
 	</div><!-- /header -->
@@ -697,6 +685,14 @@ $(document).ready(function() {
 			</select>
 		</div>
 	</div><!-- /content -->
+	
+	<!-- error -->
+	<div data-role="popup" id="error" data-overlay-theme="a">
+	    <div data-role="content" class="ui-content">
+	        <div class="warn"></div>
+	    </div><!-- /content -->
+	</div>
+	<!-- /error -->
 </div>
 <!-- /partie_1 -->
 </body>
