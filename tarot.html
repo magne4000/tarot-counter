@@ -93,6 +93,144 @@ var line = 0;
 var nbJoueurs = 0;
 var aScores = new Array();
 aScores[0] = new Array(0, 0, 0, 0, 0);
+var oScores = new Array();
+var saveEnabled = false;
+var Players = {
+    "P0": "",
+    "P1": "Joueur 1",
+    "P2": "Joueur 2",
+    "P3": "Joueur 3",
+    "P4": "Joueur 4",
+    "P5": "Joueur 5"
+};
+var Contrats = {
+    "Petite": 1,
+    "Garde": 2,
+    "GardeSans": 4,
+    "GardeContre": 6
+};
+var Poignees = {
+    "": 0,
+    "Simple": 20,
+    "Double": 30,
+    "Triple": 40
+};
+var NbrBoutsFaits = {
+    "B0": 0,
+    "B1": 1,
+    "B2": 2,
+    "B3": 3
+};
+var Points = {
+    P0: 0,P1: 1,P2: 2,P3: 3,P4: 4,P5: 5,P6: 6,P7: 7,P8: 8,P9: 9,P10: 10,P11: 11,P12: 12,P13: 13,P14: 14,P15: 15,P16: 16,P17: 17,P18: 18,P19: 19,P20: 20,P21: 21,P22: 22,P23: 23,P24: 24,P25: 25,P26: 26,P27: 27,P28: 28,P29: 29,P30: 30,P31: 31,P32: 32,P33: 33,P34: 34,P35: 35,P36: 36,P37: 37,P38: 38,P39: 39,P40: 40,P41: 41,P42: 42,P43: 43,P44: 44,P45: 45,P46: 46,P47: 47,P48: 48,P49: 49,P50: 50,P51: 51,P52: 52,P53: 53,P54: 54,P55: 55,P56: 56,P57: 57,P58: 58,P59: 59,P60: 60,P61: 61,P62: 62,P63: 63,P64: 64,P65: 65,P66: 66,P67: 67,P68: 68,P69: 69,P70: 70,P71: 71,P72: 72,P73: 73,P74: 74,P75: 75,P76: 76,P77: 77,P78: 78,P79: 79,P80: 80,P81: 81,P82: 82,P83: 83,P84: 84,P85: 85,P86: 86,P87: 87,P88: 88,P89: 89,P90: 90,P91: 91
+};
+var CorresBoutsPoints = [];
+CorresBoutsPoints[0] = 56;
+CorresBoutsPoints[1] = 51;
+CorresBoutsPoints[2] = 41;
+CorresBoutsPoints[3] = 36;
+
+function init(){
+    if ('localStorage' in window && window['localStorage'] !== null){
+        if (localStorage["nbjoueurs"]){
+            nbJoueurs = parseInt(localStorage["nbjoueurs"], 10);
+            $("#selectNbJoueurs").val(nbJoueurs);
+            changeJoueurs();
+        }
+		if (localStorage["joueur1"]){
+		    $("#player_1").val(localStorage["joueur1"]); 
+		}
+		if (localStorage["joueur2"]){
+		    $("#player_2").val(localStorage["joueur2"]); 
+		}
+		if (localStorage["joueur3"]){
+		    $("#player_3").val(localStorage["joueur3"]); 
+		}
+		if (localStorage["joueur4"]){
+		    $("#player_4").val(localStorage["joueur4"]); 
+		}
+		if (localStorage["joueur5"]){
+		    $("#player_5").val(localStorage["joueur5"]); 
+		}
+		updatePlayers();
+		if (localStorage["ascores"]){
+            aScores = JSON.parse(localStorage["ascores"]);
+        }
+        if (localStorage["oscores"]){
+            oScores = JSON.parse(localStorage["oscores"]);
+            for (var ind in oScores){
+                line += 1;
+                insertScoresInTable(oScores[ind].quiapris, oScores[ind].avecquelappele, oScores[ind].nbPtsJoueurPreneur, oScores[ind].nbPtsJoueurAppele, oScores[ind].nbPtsJoueurDefense, oScores[ind].faitede);
+            }
+        }
+        if (localStorage["trs"]){
+            var trs = JSON.parse(localStorage["trs"]);
+            for (var ind in trs){
+                $("#table_contrats tbody").append(trs[ind]);
+            }
+            newEmptyLine();
+        }
+        if (line > 0){
+            init_first();
+        }
+        saveEnabled = true;
+    }
+}
+
+function save(quiapris, avecquelappele, nbPtsJoueurPreneur, nbPtsJoueurAppele, nbPtsJoueurDefense, faitede, _line){
+    if (saveEnabled){
+	    localStorage["ascores"] = JSON.stringify(aScores);
+	    if (_line){
+	        oScores[_line-1] = {
+                quiapris: quiapris,
+                avecquelappele: avecquelappele,
+                nbPtsJoueurPreneur: nbPtsJoueurPreneur,
+                nbPtsJoueurAppele: nbPtsJoueurAppele,
+                nbPtsJoueurDefense: nbPtsJoueurDefense,
+                faitede: faitede
+            };
+	    }else{
+		    oScores[oScores.length] = {
+		        quiapris: quiapris,
+		        avecquelappele: avecquelappele,
+		        nbPtsJoueurPreneur: nbPtsJoueurPreneur,
+		        nbPtsJoueurAppele: nbPtsJoueurAppele,
+		        nbPtsJoueurDefense: nbPtsJoueurDefense,
+		        faitede: faitede
+		    };
+	    }
+	    localStorage["oscores"] = JSON.stringify(oScores);
+    }
+}
+
+function save_lines(){
+    var $trs = $("#table_contrats tbody tr.done")
+    if ($trs.length >= 1){
+        var trs = new Array();
+        for(var i=0; i<$trs.length; i++){
+            trs[i] = $trs[i].outerHTML;
+        }
+        localStorage["trs"] = JSON.stringify(trs);
+    }
+}
+
+function save_first(){
+    if (saveEnabled){
+	    localStorage["nbjoueurs"] = nbJoueurs;
+	    localStorage["joueur1"] = $("#player_1").val();
+	    localStorage["joueur2"] = $("#player_2").val();
+	    localStorage["joueur3"] = $("#player_3").val();
+	    localStorage["joueur4"] = $("#player_4").val();
+	    localStorage["joueur5"] = $("#player_5").val();
+	    localStorage["ascores"] = JSON.stringify(aScores);
+	    JSON.stringify(oScores);
+    }
+}
+
+function empty_scores(){
+    localStorage.clear();
+    document.location.reload(true);
+}
 
 function toggle_class(){
 	if ($(this).attr("class") === "table_2 rounded"){
@@ -100,55 +238,35 @@ function toggle_class(){
 		$(".table_2").attr("class", "table_1 rounded");
 		$(".table_3").attr("class", "table_2 rounded");
 	}
-};
-
-var Points = {
-	P0: 0,P1: 1,P2: 2,P3: 3,P4: 4,P5: 5,P6: 6,P7: 7,P8: 8,P9: 9,P10: 10,P11: 11,P12: 12,P13: 13,P14: 14,P15: 15,P16: 16,P17: 17,P18: 18,P19: 19,P20: 20,P21: 21,P22: 22,P23: 23,P24: 24,P25: 25,P26: 26,P27: 27,P28: 28,P29: 29,P30: 30,P31: 31,P32: 32,P33: 33,P34: 34,P35: 35,P36: 36,P37: 37,P38: 38,P39: 39,P40: 40,P41: 41,P42: 42,P43: 43,P44: 44,P45: 45,P46: 46,P47: 47,P48: 48,P49: 49,P50: 50,P51: 51,P52: 52,P53: 53,P54: 54,P55: 55,P56: 56,P57: 57,P58: 58,P59: 59,P60: 60,P61: 61,P62: 62,P63: 63,P64: 64,P65: 65,P66: 66,P67: 67,P68: 68,P69: 69,P70: 70,P71: 71,P72: 72,P73: 73,P74: 74,P75: 75,P76: 76,P77: 77,P78: 78,P79: 79,P80: 80,P81: 81,P82: 82,P83: 83,P84: 84,P85: 85,P86: 86,P87: 87,P88: 88,P89: 89,P90: 90,P91: 91
 }
 
-var CorresBoutsPoints = [];
-CorresBoutsPoints[0] = 56;
-CorresBoutsPoints[1] = 51;
-CorresBoutsPoints[2] = 41;
-CorresBoutsPoints[3] = 36;
+function init_first(){
+    nbJoueurs = $("#selectNbJoueurs").val();
+    $("#selectNbJoueurs").attr("disabled", "disabled");
 
-var Players = {
-	P0: "",
-	P1: "Joueur 1",
-	P2: "Joueur 2",
-	P3: "Joueur 3",
-	P4: "Joueur 4",
-	P5: "Joueur 5"
-};
-
-var Contrats = {
-	Petite: 1,
-	Garde: 2,
-	GardeSans: 4,
-	GardeContre: 6
-};
-
-var Poignees = {
-	"": 0,
-	Simple: 20,
-	Double: 30,
-	Triple: 40
-};
-
-var NbrBoutsFaits = {
-	B0: 0,
-	B1: 1,
-	B2: 2,
-	B3: 3
-};
+    $("#joueur_1").html($("#player_1").val());
+    $("#player_1").attr("disabled", "disabled");
+    $("#joueur_2").html($("#player_2").val());
+    $("#player_2").attr("disabled", "disabled");
+    $("#joueur_3").html($("#player_3").val());
+    $("#player_3").attr("disabled", "disabled");
+    if($("#player_4").size() !== 0){
+        $("#joueur_4").html($("#player_4").val());
+        $("#player_4").attr("disabled", "disabled");
+    }
+    if($("#player_5").size() !== 0){
+        $("#joueur_5").html($("#player_5").val());
+        $("#player_5").attr("disabled", "disabled");
+    }
+}
 
 function updatePlayers(){
-	Players.P1 = $("#player_1").val();
-	Players.P2 = $("#player_2").val();
-	Players.P3 = $("#player_3").val();
-	Players.P4 = $("#player_4").size() === 0 ? null : $("#player_4").val();
-	Players.P5 = $("#player_5").size() === 0 ? null : $("#player_5").val();
-};
+	Players["P1"] = $("#player_1").val();
+	Players["P2"] = $("#player_2").val();
+	Players["P3"] = $("#player_3").val();
+	Players["P4"] = $("#player_4").size() === 0 ? null : $("#player_4").val();
+	Players["P5"] = $("#player_5").size() === 0 ? null : $("#player_5").val();
+}
 
 var TD = $.inherit({
 	__constructor : function(value, options){
@@ -247,7 +365,7 @@ function calculerPoints(_line){
 	if(_line){
 		quiapris = $("#td_quiapris_"+iLigne).text();
 		avecquelappele = $("#td_avecquelappele_"+iLigne).text();
-		quelcontrat = eval("Contrats." + $("#td_quelcontrat_"+iLigne).text());
+		quelcontrat = Contrats[$("#td_quelcontrat_"+iLigne).text()];
 		petitmeneauboutpar = $("#td_petitmeneauboutpar_"+iLigne).text();
 		nombredeboutsfaits = parseInt($("#td_nombredeboutsfaits_"+iLigne).text());
 		pointscomptespreneur = parseInt($("#td_pointscomptespreneur_"+iLigne).text());
@@ -259,10 +377,10 @@ function calculerPoints(_line){
 		chelemrealisepar = $("#td_chelemrealisepar_"+iLigne).text();
 
 		if (typedepoignee1 == "") typedepoignee1 = 0;
-		else typedepoignee1 = eval("Poignees." + typedepoignee1);
+		else typedepoignee1 = Poignees["typedepoignee1"];
 		
 		if (typedepoignee2 == "") typedepoignee2 = 0;
-		else typedepoignee2 = eval("Poignees." + typedepoignee2);
+		else typedepoignee2 = Poignees["typedepoignee2"];
 	}
 
 	//Vérifications
@@ -383,16 +501,16 @@ function calculerPoints(_line){
 	}else{
 		insertScoresInTable(quiapris, avecquelappele, nbPtsJoueurPreneur, nbPtsJoueurAppele, nbPtsJoueurDefense, faitede);
 		$("#table_contrats tbody tr:eq("+(iLigne-1)+") td :selected").each(function(index) {
-			var jQTD = $(this).parents("td");
-			jQTD.html($(this).text());
-			jQTD.bind('dblclick', editCell);
-		});
+            var jQTD = $(this).parents("td");
+            jQTD.html($(this).text());
+        });
 	}
+	save(quiapris, avecquelappele, nbPtsJoueurPreneur, nbPtsJoueurAppele, nbPtsJoueurDefense, faitede, _line);
 	return true;
-};
+}
 
-function editCell(){
-	var jQTD = $(this);
+function editCell(e){
+	var jQTD = $(e.currentTarget);
 	var sOldValue = jQTD.html();
 	var id = jQTD.attr("id").substr(3);
 	id = id.substr(0, id.indexOf("_"));
@@ -414,24 +532,19 @@ function editCell(){
 
 	jQSelect = jQTD.children("select");
 	jQSelect.focus();
-	jQSelect.bind('blur', saveCell);
-};
+	jQSelect.on('blur', saveCell);
+}
 
-//TODO-> la fonction
-//Chercher comment faire pour la modif. du choix de poignée
-//(2 comboboxes doivent être prisent en compte à chaque fois)
 function saveCell(){
 	var jQSelect = $(this);
-	//Voir si ça serait pas mieux de foutre ces 2 lignes dans
-	//la fonction "calculerPoints" pour alléger cette dernière
 	var jQTD = jQSelect.parents("td");
 	jQTD.html(jQSelect.children(":selected").text());
 	var id = jQTD.attr("id");
 	var ligne = id.substr(id.indexOf("_", 3) + 1);
-	var i = ligne;
-	for (i; i < line; i++)
+	for (var i = ligne; i < line; i++)
 		calculerPoints(i);
-};
+	save_lines();
+}
 
 function updateScoresInTable(quiapris, avecquelappele, nbPtsJoueurPreneur, nbPtsJoueurAppele, nbPtsJoueurDefense, faitede, _line){
 	var jQTabScoresTD = $("#table_scores tbody tr:eq("+(_line-1)+")");
@@ -445,7 +558,7 @@ function updateScoresInTable(quiapris, avecquelappele, nbPtsJoueurPreneur, nbPts
 
 	var i = 0;
 	for (i = 0; i < nbJoueurs; i++){
-		var player = eval("Players.P" + (i + 1));
+		var player = Players["P" + (i + 1)];
 		var opts = getTDScoresOptions(player, quiapris, avecquelappele, nbPtsJoueurPreneur, nbPtsJoueurAppele, nbPtsJoueurDefense)
 		opts.onlyContent = true;
 		jQTabScoresTD.children("td:eq("+(4+i)+")").html(
@@ -467,7 +580,7 @@ function updateScoresInTable(quiapris, avecquelappele, nbPtsJoueurPreneur, nbPts
 		);
 	}
 	jQTabScoresTD.children("td:last").html(new TD(getVictorySign(faitede), {onlyContent: true}).getHTML());
-};
+}
 
 function insertScoresInTable(quiapris, avecquelappele, nbPtsJoueurPreneur, nbPtsJoueurAppele, nbPtsJoueurDefense, faitede){
 	var jQTabScores = $("#table_scores tbody");
@@ -482,7 +595,7 @@ function insertScoresInTable(quiapris, avecquelappele, nbPtsJoueurPreneur, nbPts
 
 	var i = 0;
 	for (i = 0; i < nbJoueurs; i++){
-		var player = eval("Players.P" + (i + 1));
+		var player = Players["P" + (i + 1)];
 		tr += new TD(
 			getScoreWithPrevLine(
 				i,
@@ -507,7 +620,7 @@ function insertScoresInTable(quiapris, avecquelappele, nbPtsJoueurPreneur, nbPts
 	tr += new TD(getVictorySign(faitede)).getHTML() + "</tr>";
 	
 	jQTabScores.append(tr);
-};
+}
 
 function getScoreWithPrevLine(indice, score, _line){
 	var iLigne = (_line)?_line:line;
@@ -516,7 +629,7 @@ function getScoreWithPrevLine(indice, score, _line){
 	var tmpScore = aScores[iLigne - 1][indice] + score;
 	aScores[iLigne][indice] = tmpScore;
 	return tmpScore;
-};
+}
 
 function getTDScoresOptions(player, preneur, appel, nbPtsJoueurPreneur, nbPtsJoueurAppele, nbPtsJoueurDefense){
 	var aOpts = {};
@@ -532,7 +645,7 @@ function getTDScoresOptions(player, preneur, appel, nbPtsJoueurPreneur, nbPtsJou
 			aOpts.italic = true;
 	}
 	return aOpts;
-};
+}
 
 function getScorePlayer(player, preneur, appel, nbPtsJoueurPreneur, nbPtsJoueurAppele, nbPtsJoueurDefense){
 	if (player == preneur)
@@ -540,101 +653,93 @@ function getScorePlayer(player, preneur, appel, nbPtsJoueurPreneur, nbPtsJoueurA
 	if (player == appel)
 		return nbPtsJoueurAppele;
 	return nbPtsJoueurDefense;
-};
+}
 
 function getVictorySign(faitede){
 	if (faitede >= 0)
 		return '\u2714';
 	return '\u2716'
-};
+}
 
 function printError(msg){
 	$("#error").html(msg);
 	return false;
-};
+}
 
 function cleanError(){
 	$("#error").html("");
-};
+}
+
+function newEmptyLine(){
+    line++;
+    var tdDonne = new TD(line, {align: "right"});
+    var tdQuiAPris = new TDListString(Players, {id: "quiapris", align: "left"});
+    var tdAvecQuelAppele = new TDListString(Players, {id: "avecquelappele", align: "left"});
+    var tdQuelContrat = new TDPairList(Contrats, {id: "quelcontrat", align: "left"});
+    var tdPetitMeneAuBoutPar = new TDListString(Players, {id: "petitmeneauboutpar", align: "left"});
+    var tdNombreDeBoutsFaits = new TDListString(NbrBoutsFaits, {id: "nombredeboutsfaits", align: "right"});
+    var tdPointsComptesPreneur = new TDListString(Points, {id: "pointscomptespreneur", align: "right"});
+    var tdPoignee1AnnonceePar = new TDListString(Players, {id: "poignee1annonceepar", align: "left"});
+    var tdTypeDePoignee1 = new TDPairList(Poignees, {id: "typedepoignee1", align: "left"});
+    var tdPoignee2AnnonceePar = new TDListString(Players, {id: "poignee2annonceepar", align: "left"});
+    var tdTypeDePoignee2 = new TDPairList(Poignees, {id: "typedepoignee2", align: "left"});
+    var tdChelemAnnoncePar = new TDListString(Players, {id: "chelemannoncepar", align: "left"});
+    var tdChelemRealisePar = new TDListString(Players, {id: "chelemrealisepar", align: "left"});
+    var tr = "<tr>"
+                + tdDonne.getHTML()
+                + tdQuiAPris.getHTML()
+                + tdAvecQuelAppele.getHTML()
+                + tdQuelContrat.getHTML()
+                + tdPetitMeneAuBoutPar.getHTML()
+                + tdNombreDeBoutsFaits.getHTML()
+                + tdPointsComptesPreneur.getHTML()
+                + tdPoignee1AnnonceePar.getHTML()
+                + tdTypeDePoignee1.getHTML()
+                + tdPoignee2AnnonceePar.getHTML()
+                + tdTypeDePoignee2.getHTML()
+                + tdChelemAnnoncePar.getHTML()
+                + tdChelemRealisePar.getHTML()
+            + "</tr>";
+    $("#table_contrats tbody tr:last").addClass('done');
+    $("#table_contrats tbody").append(tr);
+}
 
 function addLine(){
-	if (line === 0){
-		if ($("#player_1").val() == ""){
-			printError("Joueur 1 vide");
-		    return;
-		}
-		if ($("#player_2").val() == ""){
-			printError("Joueur 2 vide");
-			return;
-		}
-		if ($("#player_3").val() == ""){
-			printError("Joueur 3 vide");
-			return;
-		}
-		if ($("#player_4").size() !== 0 && $("#player_4").val() == ""){
-			printError("Joueur 4 vide");
-			return;
-		}
-		if ($("#player_5").size() !== 0 && $("#player_5").val() == ""){
-			printError("Joueur 5 vide");
-			return;
-		}
-
-		updatePlayers();
-		nbJoueurs = $("#selectNbJoueurs").val();
-		$("#selectNbJoueurs").attr("disabled", "disabled");
-
-		$("#joueur_1").html($("#player_1").val());
-		$("#player_1").attr("disabled", "disabled");
-		$("#joueur_2").html($("#player_2").val());
-		$("#player_2").attr("disabled", "disabled");
-		$("#joueur_3").html($("#player_3").val());
-		$("#player_3").attr("disabled", "disabled");
-		if($("#player_4").size() !== 0){
-			$("#joueur_4").html($("#player_4").val());
-			$("#player_4").attr("disabled", "disabled");
-		}
-		if($("#player_5").size() !== 0){
-			$("#joueur_5").html($("#player_5").val());
-			$("#player_5").attr("disabled", "disabled");
-		}
-	}else{
-		//Calcul des points de la ligne courante avant ajout de la nouvelle
-		if (!calculerPoints())
-			return;
-	}
+    setTimeout(function(){
+		if (line === 0){
+			if ($("#player_1").val() == ""){
+				printError("Joueur 1 vide");
+			    return;
+			}
+			if ($("#player_2").val() == ""){
+				printError("Joueur 2 vide");
+				return;
+			}
+			if ($("#player_3").val() == ""){
+				printError("Joueur 3 vide");
+				return;
+			}
+			if ($("#player_4").size() !== 0 && $("#player_4").val() == ""){
+				printError("Joueur 4 vide");
+				return;
+			}
+			if ($("#player_5").size() !== 0 && $("#player_5").val() == ""){
+				printError("Joueur 5 vide");
+				return;
+			}
 	
-	line++;
-	var tdDonne = new TD(line, {align: "right"});
-	var tdQuiAPris = new TDListString(Players, {id: "quiapris", align: "left"});
-	var tdAvecQuelAppele = new TDListString(Players, {id: "avecquelappele", align: "left"});
-	var tdQuelContrat = new TDPairList(Contrats, {id: "quelcontrat", align: "left"});
-	var tdPetitMeneAuBoutPar = new TDListString(Players, {id: "petitmeneauboutpar", align: "left"});
-	var tdNombreDeBoutsFaits = new TDListString(NbrBoutsFaits, {id: "nombredeboutsfaits", align: "right"});
-	var tdPointsComptesPreneur = new TDListString(Points, {id: "pointscomptespreneur", align: "right"});
-	var tdPoignee1AnnonceePar = new TDListString(Players, {id: "poignee1annonceepar", align: "left"});
-	var tdTypeDePoignee1 = new TDPairList(Poignees, {id: "typedepoignee1", align: "left"});
-	var tdPoignee2AnnonceePar = new TDListString(Players, {id: "poignee2annonceepar", align: "left"});
-	var tdTypeDePoignee2 = new TDPairList(Poignees, {id: "typedepoignee2", align: "left"});
-	var tdChelemAnnoncePar = new TDListString(Players, {id: "chelemannoncepar", align: "left"});
-	var tdChelemRealisePar = new TDListString(Players, {id: "chelemrealisepar", align: "left"});
-	var tr = "<tr>"
-				+ tdDonne.getHTML()
-				+ tdQuiAPris.getHTML()
-				+ tdAvecQuelAppele.getHTML()
-				+ tdQuelContrat.getHTML()
-				+ tdPetitMeneAuBoutPar.getHTML()
-				+ tdNombreDeBoutsFaits.getHTML()
-				+ tdPointsComptesPreneur.getHTML()
-				+ tdPoignee1AnnonceePar.getHTML()
-				+ tdTypeDePoignee1.getHTML()
-				+ tdPoignee2AnnonceePar.getHTML()
-				+ tdTypeDePoignee2.getHTML()
-				+ tdChelemAnnoncePar.getHTML()
-				+ tdChelemRealisePar.getHTML()
-			+ "</tr>";
-	$("#table_contrats tbody").append(tr);
-};
+			updatePlayers();
+			init_first();
+			save_first();
+		}else{
+			//Calcul des points de la ligne courante avant ajout de la nouvelle
+			if (!calculerPoints())
+				return;
+		}
+		newEmptyLine();
+		save_lines();
+    }, 50);
+}
 
 function changeJoueurs(){
 	var nbJoueursChoisis = $("#selectNbJoueurs").val();
@@ -654,10 +759,10 @@ function changeJoueurs(){
 		}
 	}
 	updatePlayers();
-};
+}
 
 $(document).ready(function() {
-	changeJoueurs();
+    init();
 	$(document).keydown(function(evt) {
 		if (evt.keyCode == '37' || evt.keyCode == '39') { //Left and Right arrows
 			evt.preventDefault();
@@ -666,6 +771,7 @@ $(document).ready(function() {
 	});
 	$("#table_1").bind('click', toggle_class);
 	$("#table_2").bind('click', toggle_class);
+	$(document).on('dblclick', 'tr.done>td', editCell);
 });
 </script>
 </head>
@@ -696,8 +802,8 @@ $(document).ready(function() {
 				<tfoot>
 				<tr class="add">
 					<td>
-					<a href="javascript:addLine();">
-                        <svg width="14pt" height="14pt" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg" title="Ajouter une ligne">
+					<a href="javascript:addLine();" title="Ajouter une ligne">
+                        <svg width="14pt" height="14pt" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
 							<g>
 							    <path style="fill:#65AB55;" d="M16,0C7.164,0,0,7.164,0,16s7.164,16,16,16s16-7.164,16-16S24.836,0,16,0z M24,18h-6v6h-4v-6H8v-4h6 V8h4v6h6V18z"/>
 							</g>
@@ -728,6 +834,7 @@ $(document).ready(function() {
 				<tbody>
 				</tbody>
 			</table>
+			<a href="javascript:empty_scores();" id="empty_scores">Vider</a>
 		</div>
 	</div>
 	<div id="right_panel">
