@@ -151,7 +151,7 @@ function init(){
 		if (localStorage["joueur5"]){
 		    $("#player_5").val(localStorage["joueur5"]); 
 		}
-		updatePlayers();
+		changeJoueurs();
 		if (localStorage["ascores"]){
             aScores = JSON.parse(localStorage["ascores"]);
         }
@@ -744,8 +744,6 @@ function changeJoueurs(){
 	var nbJoueursChoisis = $("#selectNbJoueurs").val();
 	var nbInputs = $("#names input").size();
 
-	if (nbJoueursChoisis == nbInputs)
-		return;
 	if (nbJoueursChoisis > nbInputs){
 		for (var i=nbInputs; i<nbJoueursChoisis; i++){
 			var s = "<span>Joueur n°" + (i+1) + " : <input id='player_" + (i+1) + "' value='Joueur "+(i+1)+"' /></span><br />";
