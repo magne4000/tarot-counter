@@ -96,11 +96,11 @@ var oScores = new Array();
 var saveEnabled = false;
 var Players = {
     "P0": "",
-    "P1": "Joueur 1",
-    "P2": "Joueur 2",
-    "P3": "Joueur 3",
-    "P4": "Joueur 4",
-    "P5": "Joueur 5"
+    "P1": "",
+    "P2": "",
+    "P3": "",
+    "P4": "",
+    "P5": ""
 };
 var Contrats = {
     "Petite": 1,
@@ -746,7 +746,7 @@ function changeJoueurs(){
 
 	if (nbJoueursChoisis > nbInputs){
 		for (var i=nbInputs; i<nbJoueursChoisis; i++){
-			var s = "<span>Joueur n°" + (i+1) + " : <input id='player_" + (i+1) + "' value='Joueur "+(i+1)+"' /></span><br />";
+			var s = "<span>Joueur n°" + (i+1) + " : <input id='player_" + (i+1) + "' placeholder='Joueur "+(i+1)+"' /></span><br />";
 			$("#names").append(s);
 		}
 	}else{
@@ -779,19 +779,19 @@ $(document).ready(function() {
 			<table id="table_contrats">
 				<thead>
 				<tr>
-					<td></td>
-					<td>Qui à pris ?</td>
-					<td>Qui est appelé ?</td>
-					<td>Quel contrat ?</td>
-					<td>Petit mené au bout par ?</td>
-					<td>Nombre de bouts faits ?</td>
-					<td>Points comptés preneur</td>
-					<td>Poignée 1 annoncée par ?</td>
-					<td>Type de poignée 1 ?</td>
-					<td>Poignée 2 annoncée par ?</td>
-					<td>Type de poignée 2 ?</td>
-					<td>Chelem annoncé par ?</td>
-					<td>Chelem réalisé par ?</td>
+					<td class="skew"></td>
+					<td class="skew">Qui à pris ?</td>
+					<td class="skew">Qui est appelé ?</td>
+					<td class="skew">Quel contrat ?</td>
+					<td class="skew">Petit mené au bout par ?</td>
+					<td class="skew">Nombre de bouts faits ?</td>
+					<td class="skew">Points comptés preneur</td>
+					<td class="skew">Poignée 1 annoncée par ?</td>
+					<td class="skew">Type de poignée 1 ?</td>
+					<td class="skew">Poignée 2 annoncée par ?</td>
+					<td class="skew">Type de poignée 2 ?</td>
+					<td class="skew">Chelem annoncé par ?</td>
+					<td class="skew">Chelem réalisé par ?</td>
 				</tr>
 				</thead>
 				<tbody>
