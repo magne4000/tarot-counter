@@ -8,29 +8,6 @@ CorresBoutsPoints[1] = 51;
 CorresBoutsPoints[2] = 41;
 CorresBoutsPoints[3] = 36;
 
-function arsort (inputArr) {
-  var valArr = [], valArrLen = 0, k, i, sorter, populateArr = new Array();
-  // compare items numerically
-  sorter = function (a, b) {return (b - a);};
-  
-  // Get key and value arrays
-  for (k in inputArr) {
-    if (inputArr.hasOwnProperty(k)) {
-      valArr.push([k, inputArr[k]]);
-    }
-  }
-  valArr.sort(function (a, b) {
-    return sorter(a[1], b[1]);
-  });
- 
-  // Repopulate the old array
-  for (i = 0, valArrLen = valArr.length; i < valArrLen; i++) {
-    populateArr.push([valArr[i][0], valArr[i][1]]);
-  }
- 
-  return populateArr;
-}
-
 function printError(msg){
   //console.log(msg);
   $(".warn").html(msg);
