@@ -144,7 +144,7 @@ $(document).ready(function() {
         var quelcontrat = this.parties[ind-1].quelcontrat;
         var petitmeneauboutpar = this.parties[ind-1].petitmeneauboutpar;
         var nombredeboutsfaits = this.parties[ind-1].nombredeboutsfaits;
-        var pointscomptespreneur = this.parties[ind-1].pointscomptespreneur;
+        var pointscomptesattaque = this.parties[ind-1].pointscomptesattaque;
         var poignee1annonceepar = this.parties[ind-1].poignee1annonceepar;
         var typedepoignee1 = this.parties[ind-1].typedepoignee1;
         var poignee2annonceepar = this.parties[ind-1].poignee2annonceepar;
@@ -152,7 +152,7 @@ $(document).ready(function() {
         var chelemannoncepar = this.parties[ind-1].chelemannoncepar;
         var chelemrealisepar = this.parties[ind-1].chelemrealisepar;
         
-        console.log(quiapris, avecquelappele, quelcontrat, petitmeneauboutpar, nombredeboutsfaits, pointscomptespreneur, poignee1annonceepar, typedepoignee1, poignee2annonceepar, typedepoignee2, chelemannoncepar, chelemrealisepar);
+        console.log(quiapris, avecquelappele, quelcontrat, petitmeneauboutpar, nombredeboutsfaits, pointscomptesattaque, poignee1annonceepar, typedepoignee1, poignee2annonceepar, typedepoignee2, chelemannoncepar, chelemrealisepar);
       
         //Vérifications
         if (!quiapris){
@@ -161,7 +161,7 @@ $(document).ready(function() {
         if (!nombredeboutsfaits) {
           return printError("Le champ “Nombre de bouts faits ?” doit être renseigné.");
         }
-        if (!pointscomptespreneur) {
+        if (!pointscomptesattaque) {
           return printError("Le champ “Points comptés preneur” doit être renseigné.");
         }
         if ((poignee1annonceepar && !typedepoignee1) || (!poignee1annonceepar && typedepoignee1)){
@@ -191,7 +191,7 @@ $(document).ready(function() {
         var nbPtsJoueurDefense = null;
       
         //Points dépendants du contrat
-        var faitede = (pointscomptespreneur - (CorresBoutsPoints[nombredeboutsfaits]));
+        var faitede = (pointscomptesattaque - (CorresBoutsPoints[nombredeboutsfaits]));
         if (faitede >= 0){
           nbPtsJoueurAppele = (faitede + 25) * quelcontrat;
         }else{

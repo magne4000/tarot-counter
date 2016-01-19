@@ -11,21 +11,6 @@
 <script type="text/javascript" src="vue.min.js"></script>
 <script type="text/javascript" src="tarot.js"></script>
 <style type="text/css">
-.message-dismiss {
-    padding-left: 0.5em;
-    font-weight: normal;
-    color: #555;
-}
-.message-container {
-    padding: 0.5em;
-    line-height: 1em;
-}
-.message-container p {
-    padding: 0 1em;
-}
-.message-container p .ui-icon {
-    margin-right: .3em;
-}
 .table-scores thead th,
 .table-scores tbody tr:last-child {
 	border-bottom: 1px solid #d6d6d6;
@@ -153,17 +138,17 @@
 				<label for="quelcontrat_{{ partie.n }}_gardecontre">Garde contre</label>
 			</fieldset>
 		</div>
-		<div data-role="fieldcontain"> <!-- Petit mené au bout par ? -->
-			<label for="petitmeneauboutpar_{{ partie.n }}" class="select">Petit mené au bout par ?</label>
-			<joueurs id="petitmeneauboutpar" :n="partie.n" :parent-model.sync="partie.petitmeneauboutpar" :joueurs="joueurs"></joueurs>
+		<div data-role="fieldcontain"> <!-- Points comptés attaque -->
+			<label for="pointscomptespreneur_{{ partie.n }}" class="select">Points comptés attaque</label>
+			<input type="number" id="pointscomptesattaque_{{ partie.n }}" min="0" max="91" v-model="partie.pointscomptesattaque">
 		</div>
 		<div data-role="fieldcontain"> <!-- Nombre de bouts faits ? -->
 			<label for="nombredeboutsfaits_{{ partie.n }}" class="select">Nombre de bouts faits ?</label>
 			<input type="number" id="nombredeboutsfaits_{{ partie.n }}" min="0" max="3" v-model="partie.nombredeboutsfaits">
 		</div>
-		<div data-role="fieldcontain"> <!-- Points comptés preneur -->
-			<label for="pointscomptespreneur_{{ partie.n }}" class="select">Points comptés preneur (todo switch defense)</label>
-			<input type="number" id="pointscomptespreneur_{{ partie.n }}" min="0" max="91" v-model="partie.pointscomptespreneur">
+		<div data-role="fieldcontain"> <!-- Petit mené au bout par ? -->
+			<label for="petitmeneauboutpar_{{ partie.n }}" class="select">Petit mené au bout par ?</label>
+			<joueurs id="petitmeneauboutpar" :n="partie.n" :parent-model.sync="partie.petitmeneauboutpar" :joueurs="joueurs"></joueurs>
 		</div>
 		<div data-role="fieldcontain"> <!-- Poignée 1 annoncée par ? -->
 			<label for="poignee1annonceepar_{{ partie.n }}" class="select">Poignée 1 annoncée par ?</label>
