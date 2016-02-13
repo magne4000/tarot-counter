@@ -2,11 +2,7 @@
 
 /* global Vue */
 
-var CorresBoutsPoints = [];
-CorresBoutsPoints[0] = 56;
-CorresBoutsPoints[1] = 51;
-CorresBoutsPoints[2] = 41;
-CorresBoutsPoints[3] = 36;
+var CorresBoutsPoints = [56, 51, 41, 36];
 
 function printError(msg){
   //console.log(msg);
@@ -123,7 +119,13 @@ $(document).ready(function() {
         this.scoretotal = score_total;
       },
       update_scores: function update_scores(page, quiapris, avecquelappele, nbPtsJoueurPreneur, nbPtsJoueurAppele, nbPtsJoueurDefense, faitede) {
-        console.log('update_scores', quiapris, avecquelappele, nbPtsJoueurPreneur, nbPtsJoueurAppele, nbPtsJoueurDefense, faitede);
+        console.log(
+          'quiapris:', quiapris,
+          '\navecquelappele:', avecquelappele,
+          '\nnbPtsJoueurPreneur:', nbPtsJoueurPreneur,
+          '\nnbPtsJoueurAppele:', nbPtsJoueurAppele,
+          '\nnbPtsJoueurDefense:', nbPtsJoueurDefense,
+          '\nfaitede:', faitede);
         var scoreLine = [], i = 1, scorePlayer;
         for (; i<=this.joueurs.length; i++) {
           scorePlayer = this.get_score_joueur('P'+i, quiapris, avecquelappele, nbPtsJoueurPreneur, nbPtsJoueurAppele, nbPtsJoueurDefense);
@@ -152,7 +154,19 @@ $(document).ready(function() {
         var chelemannoncepar = this.parties[ind-1].chelemannoncepar;
         var chelemrealisepar = this.parties[ind-1].chelemrealisepar;
         
-        console.log(quiapris, avecquelappele, quelcontrat, petitmeneauboutpar, nombredeboutsfaits, pointscomptesattaque, poignee1annonceepar, typedepoignee1, poignee2annonceepar, typedepoignee2, chelemannoncepar, chelemrealisepar);
+        console.log(
+          'quiapris:', quiapris,
+          '\navecquelappele:', avecquelappele,
+          '\nquelcontrat:', quelcontrat,
+          '\npetitmeneauboutpar:', petitmeneauboutpar,
+          '\nnombredeboutsfaits:', nombredeboutsfaits,
+          '\npointscomptesattaque:', pointscomptesattaque,
+          '\npoignee1annonceepar:', poignee1annonceepar,
+          '\ntypedepoignee1:', typedepoignee1,
+          '\npoignee2annonceepar:', poignee2annonceepar,
+          '\ntypedepoignee2:', typedepoignee2,
+          '\nchelemannoncepar:', chelemannoncepar,
+          '\nchelemrealisepar:', chelemrealisepar);
       
         //Vérifications
         if (!quiapris){
@@ -197,9 +211,9 @@ $(document).ready(function() {
         }else{
           nbPtsJoueurAppele = (faitede - 25) * quelcontrat;
         }
-        if (petitmeneauboutpar == quiapris || petitmeneauboutpar == avecquelappele){
+        if (petitmeneauboutpar === quiapris || petitmeneauboutpar === avecquelappele){
           nbPtsJoueurAppele += 10 * quelcontrat;
-        }else if(petitmeneauboutpar != ""){
+        }else if(petitmeneauboutpar){
           nbPtsJoueurAppele -= 10 * quelcontrat;
         }
         nbPtsJoueurPreneur = multi * nbPtsJoueurAppele;
