@@ -1,6 +1,7 @@
 "use strict";
 
 /* global Vue */
+/* global $ */
 
 var CorresBoutsPoints = [56, 51, 41, 36];
 
@@ -9,6 +10,12 @@ function printError(msg){
   $(".warn").html(msg);
   $(":mobile-pagecontainer").pagecontainer("change", "#error");
   return false;
+}
+
+function callbackError(msg){
+  return function() {
+    printError(msg);
+  };
 }
 
 $(document).ready(function() {
@@ -88,14 +95,16 @@ $(document).ready(function() {
         this.change_page(1);
       },
       change_page: function change_page(nextpage) {
-        var haserror = false;
+        var ret = false;
         if (nextpage > this.parties.length) {
           this.parties.push({n: nextpage, quiapris: 'P1'});
         }
         if (this.page !== 0) {
-          haserror = !this.calculer_points(this.page);
+          ret = this.calculer_points(this.page);
         }
-        if (!haserror) {
+        if (ret && nextpage > this.page) {
+          ret();
+        } else {
           this.page = nextpage;
         }
       },
@@ -119,13 +128,13 @@ $(document).ready(function() {
         this.scoretotal = score_total;
       },
       update_scores: function update_scores(page, quiapris, avecquelappele, nbPtsJoueurPreneur, nbPtsJoueurAppele, nbPtsJoueurDefense, faitede) {
-        console.log(
-          'quiapris:', quiapris,
-          '\navecquelappele:', avecquelappele,
-          '\nnbPtsJoueurPreneur:', nbPtsJoueurPreneur,
-          '\nnbPtsJoueurAppele:', nbPtsJoueurAppele,
-          '\nnbPtsJoueurDefense:', nbPtsJoueurDefense,
-          '\nfaitede:', faitede);
+        // console.log(
+        //   'quiapris:', quiapris,
+        //   '\navecquelappele:', avecquelappele,
+        //   '\nnbPtsJoueurPreneur:', nbPtsJoueurPreneur,
+        //   '\nnbPtsJoueurAppele:', nbPtsJoueurAppele,
+        //   '\nnbPtsJoueurDefense:', nbPtsJoueurDefense,
+        //   '\nfaitede:', faitede);
         var scoreLine = [], i = 1, scorePlayer;
         for (; i<=this.joueurs.length; i++) {
           scorePlayer = this.get_score_joueur('P'+i, quiapris, avecquelappele, nbPtsJoueurPreneur, nbPtsJoueurAppele, nbPtsJoueurDefense);
@@ -154,35 +163,35 @@ $(document).ready(function() {
         var chelemannoncepar = this.parties[ind-1].chelemannoncepar;
         var chelemrealisepar = this.parties[ind-1].chelemrealisepar;
         
-        console.log(
-          'quiapris:', quiapris,
-          '\navecquelappele:', avecquelappele,
-          '\nquelcontrat:', quelcontrat,
-          '\npetitmeneauboutpar:', petitmeneauboutpar,
-          '\nnombredeboutsfaits:', nombredeboutsfaits,
-          '\npointscomptesattaque:', pointscomptesattaque,
-          '\npoignee1annonceepar:', poignee1annonceepar,
-          '\ntypedepoignee1:', typedepoignee1,
-          '\npoignee2annonceepar:', poignee2annonceepar,
-          '\ntypedepoignee2:', typedepoignee2,
-          '\nchelemannoncepar:', chelemannoncepar,
-          '\nchelemrealisepar:', chelemrealisepar);
+        // console.log(
+        //   'quiapris:', quiapris,
+        //   '\navecquelappele:', avecquelappele,
+        //   '\nquelcontrat:', quelcontrat,
+        //   '\npetitmeneauboutpar:', petitmeneauboutpar,
+        //   '\nnombredeboutsfaits:', nombredeboutsfaits,
+        //   '\npointscomptesattaque:', pointscomptesattaque,
+        //   '\npoignee1annonceepar:', poignee1annonceepar,
+        //   '\ntypedepoignee1:', typedepoignee1,
+        //   '\npoignee2annonceepar:', poignee2annonceepar,
+        //   '\ntypedepoignee2:', typedepoignee2,
+        //   '\nchelemannoncepar:', chelemannoncepar,
+        //   '\nchelemrealisepar:', chelemrealisepar);
       
         //Vérifications
         if (!quiapris){
-          return printError("Le champ “Qui à pris ?” doit être renseigné.");
+          return callbackError("Le champ “Qui à pris ?” doit être renseigné.");
         }
         if (!nombredeboutsfaits) {
-          return printError("Le champ “Nombre de bouts faits ?” doit être renseigné.");
+          return callbackError("Le champ “Nombre de bouts faits ?” doit être renseigné.");
         }
         if (!pointscomptesattaque) {
-          return printError("Le champ “Points comptés preneur” doit être renseigné.");
+          return callbackError("Le champ “Points comptés preneur” doit être renseigné.");
         }
         if ((poignee1annonceepar && !typedepoignee1) || (!poignee1annonceepar && typedepoignee1)){
-          return printError("Poignée 1, informations incomplètes.");
+          return callbackError("Poignée 1, informations incomplètes.");
         }
         if ((poignee2annonceepar && !typedepoignee2) || (!poignee2annonceepar && typedepoignee2)){
-          return printError("Poignée 2, informations incomplètes.");
+          return callbackError("Poignée 2, informations incomplètes.");
         }
         //Si pas d'erreur, on nettoie le possible précédent message d'erreur.
         $('.warn').empty();
@@ -283,7 +292,7 @@ $(document).ready(function() {
         }
         //Mise à jour des scores
         this.update_scores(ind, quiapris, avecquelappele, nbPtsJoueurPreneur, nbPtsJoueurAppele, nbPtsJoueurDefense, faitede);
-        return true;
+        return false;
       }
     }
   });
@@ -291,6 +300,6 @@ $(document).ready(function() {
   //Redirection sur la page d'accueil au chargement
   var urlSplit = document.URL.split("#");
   if (urlSplit[1]) {
-    location.href = urlSplit[0];
+    window.location.href = urlSplit[0];
   }
 });
