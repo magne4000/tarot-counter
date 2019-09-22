@@ -6,9 +6,8 @@
 var CorresBoutsPoints = [56, 51, 41, 36];
 
 function printError(msg){
-  //console.log(msg);
-  $(".warn").html(msg);
-  $(":mobile-pagecontainer").pagecontainer("change", "#error");
+  console.error(msg);
+  M.toast({ html: msg, classes: 'warn' });
   return false;
 }
 
@@ -19,62 +18,59 @@ function callbackError(msg){
 }
 
 $(document).ready(function() {
-  
-  Vue.directive('jqm-radio', {
-    bind: function () {
-      var self = this;
-      $(this.el).on('change', function(event) {
-        if (!event.hasOwnProperty('originalEvent')) {
-          if ("createEvent" in document) {
-            var evt = document.createEvent("HTMLEvents");
-            evt.initEvent("change", false, true);
-            self.el.dispatchEvent(evt);
-          } else {
-            self.el.fireEvent("onchange");
-          }
-        }
+  $(".dropdown-trigger").dropdown();
+
+  Vue.directive('select', {
+    twoWay: true,
+    bind: function (...args) {
+      Vue.nextTick(() => {
+        const $this = $(this.el);
+        $this.formSelect();
       });
+    },
+    update: function (newValue, oldValue) {
+        Vue.nextTick(() => {
+            const instance = M.FormSelect.getInstance(this.el);
+            if (instance) {
+                instance.destroy();
+                $(this.el).formSelect();
+            }
+        });
+    },
+    unbind: function () {
+        M.FormSelect.getInstance(this.el).destroy();
     }
   });
-  
+
   var JoueursComponent = Vue.extend({
     props: {
       id: String,
       parentModel: {
-        twoWay: true
+        twoWay: true,
       },
       joueurs: Array,
-      n: Number
+      label: String,
     },
-    template: '<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">' +
-      '<template v-for="joueur in joueurs" track-by="$index">' +
-        '<input type="radio" v-model="parentModel" name="{{ id }}_{{n}}" id="{{ id }}_P{{$index + 1}}_{{n}}" value="P{{$index + 1}}" v-jqm-radio>' +
-        '<label for="{{ id }}_P{{$index + 1}}_{{n}}">{{joueur}}</label>' +
-      '</template>' +
-    '</fieldset>'
+    template: '<div class="input-field col s12">' +
+      '<select v-select="joueurs" v-model="parentModel">' +
+        '<option v-for="joueur in joueurs" value="P{{$index + 1}}" track-by="$index">' +
+          '{{joueur}}' +
+        '</option>' +
+      '</select>' +
+      '<label>{{label}}</label>' +
+    '</div>'
   });
-  
+
   Vue.component('joueurs', JoueursComponent);
-  
+
   new Vue({
     el: '#app',
     data: {
       page: 0,
-      parties: [
-        { n: 1, quiapris: 'P1' }
-      ],
+      parties: [],
       scores: [],
       scoretotal: [0, 0, 0],
       joueurs: ['', '', '']
-    },
-    watch: {
-      'page': function (val, oldVal) {
-        if (val >= 1) {
-          Vue.nextTick(function () {
-            $(":mobile-pagecontainer").pagecontainer("change", "#partie_" + val);
-          });
-        }
-      }
     },
     methods: {
       ismax: function ismax(value, values) {
@@ -95,16 +91,22 @@ $(document).ready(function() {
         this.change_page(1);
       },
       change_page: function change_page(nextpage) {
-        var ret = false;
-        if (nextpage > this.parties.length) {
-          this.parties.push({n: nextpage, quiapris: 'P1'});
+        if (typeof nextpage === 'string') {
+          this.page = nextpage;
+          return;
         }
-        if (this.page !== 0) {
+        var ret = false;
+        // Mise à jour des scores
+        if (typeof this.page !== 'string' && this.page !== 0) {
           ret = this.calculer_points(this.page);
         }
         if (ret && nextpage > this.page) {
           ret();
         } else {
+          // Nouvelle partie
+          if (nextpage > this.parties.length) {
+            this.parties.push({quiapris: 'P1'});
+          }
           this.page = nextpage;
         }
       },
@@ -162,7 +164,7 @@ $(document).ready(function() {
         var typedepoignee2 = this.parties[ind-1].typedepoignee2;
         var chelemannoncepar = this.parties[ind-1].chelemannoncepar;
         var chelemrealisepar = this.parties[ind-1].chelemrealisepar;
-        
+
         // console.log(
         //   'quiapris:', quiapris,
         //   '\navecquelappele:', avecquelappele,
@@ -176,7 +178,7 @@ $(document).ready(function() {
         //   '\ntypedepoignee2:', typedepoignee2,
         //   '\nchelemannoncepar:', chelemannoncepar,
         //   '\nchelemrealisepar:', chelemrealisepar);
-      
+
         //Vérifications
         if (!quiapris){
           return callbackError("Le champ “Qui à pris ?” doit être renseigné.");
@@ -195,7 +197,7 @@ $(document).ready(function() {
         }
         //Si pas d'erreur, on nettoie le possible précédent message d'erreur.
         $('.warn').empty();
-      
+
         if (this.joueurs.length === 5){
           multi = 2;
           if (!avecquelappele) {
@@ -208,11 +210,11 @@ $(document).ready(function() {
           multi = 2;
           avecquelappele = null;
         }
-      
+
         var nbPtsJoueurAppele = null;
         var nbPtsJoueurPreneur = null;
         var nbPtsJoueurDefense = null;
-      
+
         //Points dépendants du contrat
         var faitede = (pointscomptesattaque - (CorresBoutsPoints[nombredeboutsfaits]));
         if (faitede >= 0){
@@ -250,7 +252,7 @@ $(document).ready(function() {
             nbPtsJoueurDefense += typedepoignee2;
           }
         }
-        
+
         if (chelemannoncepar === quiapris || chelemannoncepar === avecquelappele){
           //Annoncé par l'attaque et réalisé par l'attaque
           if (quiapris == chelemrealisepar || avecquelappele == chelemrealisepar){
@@ -296,10 +298,4 @@ $(document).ready(function() {
       }
     }
   });
-  
-  //Redirection sur la page d'accueil au chargement
-  var urlSplit = document.URL.split("#");
-  if (urlSplit[1]) {
-    window.location.href = urlSplit[0];
-  }
 });
