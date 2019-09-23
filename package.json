@@ -5,13 +5,15 @@
   "author": "magne4000",
   "scripts": {
     "test": "jest",
-    "build": "npx tsc --skipLibCheck -p ."
+    "build": "npx ttsc --skipLibCheck -p ."
   },
   "dependencies": {},
   "devDependencies": {
     "@types/jest": "^24.0.18",
+    "@zoltu/typescript-transformer-append-js-extension": "^1.0.1",
     "jest": "^24.9.0",
     "ts-jest": "^24.1.0",
+    "ttypescript": "^1.5.7",
     "typescript": "^3.6.3"
   },
   "bugs": {

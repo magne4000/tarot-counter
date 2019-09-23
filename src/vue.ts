@@ -21,10 +21,16 @@ const JoueursComponent = Vue.extend({
 
 Vue.component('joueurs', JoueursComponent);
 
+type Score = {
+  score: number,
+  apris: boolean,
+  estappele: boolean,
+}
+
 const data = {
   page: 0 as number | string,
   parties: [] as Partial<Partie>[],
-  scores: [] as number[][],
+  scores: [] as Score[][],
   scoretotal: [] as number[],
   joueurs: [] as Joueur[]
 };
@@ -63,20 +69,19 @@ const methods = {
     }
   },
   update_scores: function update_scores(this: VueSelf, page: number, quiapris: Joueur, avecquelappele: Joueur, points: Points) {
-    const scoreLine = [], i = 1, scorePlayer;
+    const scoreLine: Score[] = [];
     for (const joueur of this.joueurs) {
-      scorePlayer = get_score_joueur(joueur, quiapris, avecquelappele, points);
       scoreLine.push({
-        score: scorePlayer,
-        apris: quiapris === 'P'+i,
-        estappele: avecquelappele === 'P'+i
+        score: get_score_joueur(joueur, quiapris, avecquelappele, points),
+        apris: quiapris === joueur,
+        estappele: avecquelappele === joueur
       });
     }
-    this.scores.$set(page - 1, scoreLine);
+    (this.scores as any).$set(page - 1, scoreLine);
     this.update_score_total();
   },
   update_score_total: function update_score_total(this: VueSelf) {
-    var i=0, j, score_total=[];
+    let i=0, j, score_total=[];
     for (; i<this.scores.length; i++) {
       for (j=0; j<this.scores[i].length; j++) {
         if (!score_total[j]) score_total.push(this.scores[i][j].score);
