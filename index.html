@@ -4,12 +4,13 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Tarot</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-<link type="text/css" rel="stylesheet" href="materialize.min.css"  media="screen,projection"/>
+<link type="text/css" rel="stylesheet" href="semantic.min.css"  media="screen,projection"/>
 <script type="text/javascript" src="jquery.min.js"></script>
 <script type="text/javascript" src="vue.js"></script>
 <!--<script type="text/javascript" src="vue.min.js"></script>-->
-<script type="text/javascript" src="tarot.js"></script>
+<script type="module">
+    import vue from './dist/vue.js';
+</script>
 <style type="text/css">
 .warn {
 	background-color: #ED1C24;
@@ -54,17 +55,17 @@
         <div>
             <h1>Joueurs</h1>
         </div><!-- /header -->
-        <div>
+        <form class="ui form">
             <div id="fieldjoueurs">
-                <div data-role="fieldcontain" v-for="(index, joueur) in joueurs" track-by="$index">
+                <div class="field" v-for="(index, joueur) in joueurs" track-by="$index">
                     <label for="joueur_{{ index+1 }}">Joueur {{ index+1 }}</label>
                     <input type="text" id="joueur_{{ index+1 }}" v-model="joueur"/>
                 </div>
             </div>
-            <a class="waves-effect waves-light btn" v-on:click="add_player">Ajouter un joueur</a>
-        </div><!-- /content -->
+            <a class="ui button" v-on:click="add_player">Ajouter un joueur</a>
+        </form><!-- /content -->
 
-        <a class="waves-effect waves-light btn" v-on:click="start">Commencer</a>
+        <a class="ui button" v-on:click="start">Commencer</a>
     </div>
     <!-- /joueurs -->
 
@@ -100,14 +101,14 @@
 
     <!-- parties -->
     <div class="partie col s12" id="partie_{{ partien }}" v-for="(partien, partie) in parties" track-by="$index" v-show="page == partien+1">
-        <div>
+        <form class="ui form">
             <!-- Qui à pris ? -->
             <joueurs label="Qui à pris ?" id="quiapris" :parent-model.sync="partie.quiapris" :joueurs="joueurs"></joueurs>
             <!-- Qui est appelé ? -->
             <joueurs label="Qui est appelé ?" id="avecquelappele" :parent-model.sync="partie.avecquelappele" :joueurs="joueurs"></joueurs>
             <!-- Quel contrat ? -->
-            <div class="input-field col s12">
-                <select v-model="partie.quelcontrat" v-select number>
+            <div class="field">
+                <select class="ui dropdown" v-model="partie.quelcontrat" v-select number>
                     <option value="1">Petite</option>
                     <option value="2">Garde</option>
                     <option value="4">Garde sans</option>
@@ -116,12 +117,12 @@
                 <label>Quel contrat ?</label>
             </div>
             <!-- Points comptés attaque -->
-            <div class="input-field col s12">
+            <div class="field">
                 <input placeholder="91" type="number" min="0" max="91" v-model="partie.pointscomptesattaque">
                 <label>Points comptés attaque</label>
             </div>
             <!-- Nombre de bouts faits ? -->
-            <div class="input-field col s12">
+            <div class="field">
                 <input placeholder="3" type="number" min="0" max="3" v-model="partie.nombredeboutsfaits">
                 <label>Nombre de bouts faits ?</label>
             </div>
@@ -130,8 +131,8 @@
             <!-- Poignée 1 annoncée par ? -->
             <joueurs label="Poignée 1 annoncée par ?" id="poignee1annonceepar" :parent-model.sync="partie.poignee1annonceepar" :joueurs="joueurs"></joueurs>
             <!-- Type de poignée 1 ? -->
-            <div class="input-field col s12">
-                <select v-model="partie.typedepoignee1" v-select number>
+            <div class="field">
+                <select class="ui dropdown" v-model="partie.typedepoignee1" v-select number>
                     <option value="20">Simple</option>
                     <option value="30">Double</option>
                     <option value="40">Triple</option>
@@ -140,8 +141,8 @@
             </div>
             <joueurs label="Poignée 2 annoncée par ?" id="poignee2annonceepar" :parent-model.sync="partie.poignee2annonceepar" :joueurs="joueurs"></joueurs>
             <!-- Type de poignée 2 ? -->
-            <div class="input-field col s12">
-                <select v-model="partie.typedepoignee2" v-select number>
+            <div class="field">
+                <select class="ui dropdown" v-model="partie.typedepoignee2" v-select number>
                     <option value="20">Simple</option>
                     <option value="30">Double</option>
                     <option value="40">Triple</option>
@@ -152,11 +153,11 @@
             <joueurs label="Chelem annoncé par ?" id="chelemannoncepar" :parent-model.sync="partie.chelemannoncepar" :joueurs="joueurs"></joueurs>
             <!-- Chelem réalisé par ? -->
             <joueurs label="Chelem réalisé par ?" id="chelemrealisepar" :parent-model.sync="partie.chelemrealisepar" :joueurs="joueurs"></joueurs>
-        </div><!-- /content -->
+        </form><!-- /content -->
 
     </div>
 </div>
 <!-- /parties -->
-<script type="text/javascript" src="materialize.min.js"></script>
+<script type="text/javascript" src="semantic.min.js"></script>
 </body>
 </html>

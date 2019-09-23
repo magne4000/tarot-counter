@@ -1,0 +1,29 @@
+{
+  "name": "tarot-counter",
+  "version": "1.0.0",
+  "description": "Standalone web app for counting points in tarot",
+  "author": "magne4000",
+  "scripts": {
+    "test": "jest",
+    "build": "npx tsc --skipLibCheck -p ."
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/jest": "^24.0.18",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.1.0",
+    "typescript": "^3.6.3"
+  },
+  "bugs": {
+    "url": "https://github.com/magne4000/tarot-counter/issues"
+  },
+  "homepage": "https://github.com/magne4000/tarot-counter#readme",
+  "keywords": [
+    "tarot"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/magne4000/tarot-counter.git"
+  }
+}
