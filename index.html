@@ -85,9 +85,12 @@
                     <tr v-for="(index, line) in scores" track-by="$index">
                         <td>
                           Partie n°{{ index+1 }}
-                          <span class="ui label tiny" :class="line.contrat.color">{{line.contrat.label}}</span>
                         </td>
-                        <td v-for="score_col in line.scores" track-by="$index" v-bind:class="{ 'bold': score_col.apris }">{{score_col.score}}</td>
+                        <td v-for="score_col in line.scores" track-by="$index" class="ui labels tiny horizontal">
+                          {{score_col.score}}
+                          <span v-if="score_col.estappele" class="ui label">appel</span>
+                          <span v-if="score_col.apris" class="ui label" :class="line.contrat.color">{{line.contrat.label}}</span>
+                        </td>
                     </tr>
                 </tbody>
                 <tfoot>
