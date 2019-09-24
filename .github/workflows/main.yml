@@ -20,7 +20,7 @@ jobs:
       - name: Build
         run: echo ${{ github.sha }} > Release.txt
       - name: Test
-        run: cat Release.tx
+        run: cat Release.txt
       - name: Zip
         run: |
           zip -r tarot.zip dist index.html semantic.min.css jquery.min.js vue.min.js
