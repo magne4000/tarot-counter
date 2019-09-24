@@ -65,7 +65,10 @@ Vue.directive('dropdown', {
   bind: function () {
     $(this.el).dropdown();
   },
-  update: function () {
+  update: function (value: any) {
+    if (value !== undefined) {
+      $(this.el).dropdown('set selected', value);
+    }
     $(this.el).dropdown('refresh');
   },
 });
@@ -82,7 +85,7 @@ const JoueursComponent = Vue.extend({
   },
   template: `<div class="field">
       <label>{{label}}</label>
-      <select name="{{name}}" v-model="parentModel" v-dropdown>
+      <select name="{{name}}" v-model="parentModel" v-dropdown="parentModel">
         <option value="">Joueur</option>
         <option v-for="joueur in joueurs" :value="joueur" track-by="$index">
           {{joueur}}

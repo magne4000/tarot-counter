@@ -55,7 +55,7 @@
     <div class="ui tabular menu attached top" v-tabular="parties" v-show="page !== 'index'">
       <a class="item" :class="{ active: page === 'scores' }" v-on:click="change_page('scores')">Scores</a>
       <a class="item" :class="{ active: page.startsWith('partie-') }" v-on:click="change_page('partie-' + parties.length)">Partie en cours</a>
-      <div class="ui simple dropdown item" v-dropdown="parties">
+      <div class="ui simple dropdown item" v-dropdown>
         Parties
         <i class="dropdown icon"></i>
         <div class="menu">
@@ -123,7 +123,7 @@
         <!-- Quel contrat ? -->
         <div class="field">
             <label>Quel contrat ?</label>
-            <select class="ui dropdown" v-model="partie.quelcontrat" name="quelcontrat" v-dropdown number>
+            <select class="ui dropdown" v-model="partie.quelcontrat" name="quelcontrat" v-dropdown="partie.quelcontrat" number>
                 <option value="">Contrat</option>
                 <option value="1">Petite</option>
                 <option value="2">Garde</option>
@@ -148,7 +148,7 @@
         <!-- Type de poignée 1 ? -->
         <div class="field">
             <label>Type de poignée 1 ?</label>
-            <select class="ui dropdown" name="typedepoignee1" v-model="partie.typedepoignee1" v-dropdown number>
+            <select class="ui dropdown" name="typedepoignee1" v-model="partie.typedepoignee1" v-dropdown="partie.typedepoignee1" number>
                 <option value="">Poignee</option>
                 <option value="20">Simple</option>
                 <option value="30">Double</option>
@@ -159,7 +159,7 @@
         <!-- Type de poignée 2 ? -->
         <div class="field">
             <label>Type de poignée 2 ?</label>
-            <select class="ui dropdown" name="typedepoignee2" v-model="partie.typedepoignee2" v-dropdown number>
+            <select class="ui dropdown" name="typedepoignee2" v-model="partie.typedepoignee2" v-dropdown="partie.typedepoignee2" number>
                 <option value="">Poignee</option>
                 <option value="20">Simple</option>
                 <option value="30">Double</option>
