@@ -30,11 +30,17 @@ Vue.directive('tabular', {
   bind: function () {
     $(this.el).find('.item').tab();
   },
+  update: function () {
+    $(this.el).find('.item').tab('refresh');
+  },
 });
 
 Vue.directive('dropdown', {
   bind: function () {
     $(this.el).dropdown();
+  },
+  update: function () {
+    $(this.el).dropdown('refresh');
   },
 });
 
@@ -96,18 +102,14 @@ const methods = {
     this.change_page('partie-1');
   },
   change_page: function change_page(this: VueSelf, nextpage: string) {
-    console.log(this.page, nextpage)
-    const [, currI] = parse_page(this.page);
-    if (currI === null) {
-      this.page = nextpage;
-    } else {
-      const partie = this.parties[currI-1];
-      try {
-        this.update_scores(currI, partie.quiapris!, partie.avecquelappele!, calculer_points(this.joueurs.length, partie));
-        this.page = nextpage;
-      } catch (e) {
-        console.error(e);
-      }
+    this.page = nextpage;
+  },
+  trigger_update_scores: function(this: VueSelf, partien: number) {
+    const partie = this.parties[partien-1];
+    try {
+      this.update_scores(partien-1, partie.quiapris!, partie.avecquelappele!, calculer_points(this.joueurs.length, partie));
+    } catch (e) {
+      console.error(e);
     }
   },
   update_scores: function update_scores(this: VueSelf, indice: number, quiapris: Joueur, avecquelappele: Joueur, points: Points) {
@@ -119,7 +121,7 @@ const methods = {
         estappele: avecquelappele === joueur
       });
     }
-    (this.scores as any).$set(indice - 1, scoreLine);
+    (this.scores as any).$set(indice, scoreLine);
     this.update_score_total();
   },
   update_score_total: function update_score_total(this: VueSelf) {
