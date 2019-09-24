@@ -16,7 +16,7 @@ jobs:
         run: |
           npm install
           npm run test
-          bpm run build
+          npm run build
       - name: Build
         run: echo ${{ github.sha }} > Release.txt
       - name: Test
