@@ -1,4 +1,4 @@
-import { calculer_points, get_score_joueur, Joueur, Partie, Points } from './tarot';
+import { calculer_points, get_score_joueur, Joueur, Contrat, Partie, Points } from './tarot';
 
 declare const Vue: any;
 declare const $: any;
@@ -93,18 +93,34 @@ const JoueursComponent = Vue.extend({
 
 Vue.component('joueurs', JoueursComponent);
 
-type Score = {
+type ScoreCol = {
   score: number,
   apris: boolean,
   estappele: boolean,
 }
 
+type ScoreLine = {
+  scores: ScoreCol[],
+  contrat: {
+    label: string,
+    color: string,
+  },
+}
+
 const nouveau_joueur = (): Joueur => ({ nom: '' });
+const contrat_str = (contrat: Contrat) => {
+  switch (contrat) {
+    case Contrat.Petite: return 'Petite';
+    case Contrat.Garde: return 'Garde';
+    case Contrat.GardeSans: return 'Garde Sans';
+    case Contrat.GardeContre: return 'Garde Contre';
+  }
+}
 
 const data = {
   page: 'index' as string,
   parties: [] as Partial<Partie>[],
-  scores: [] as Score[][],
+  scores: [] as ScoreLine[],
   scoretotal: [] as number[],
   joueurs: [nouveau_joueur(), nouveau_joueur(), nouveau_joueur()] as Joueur[]
 };
@@ -132,38 +148,45 @@ const methods = {
     }
     this.change_page('partie-' + (partien+1));
   },
-  trigger_update_scores: function(this: VueSelf, e: Event, partien: number) {
+  trigger_update_scores: function(this: VueSelf, e: Event, indice: number) {
     if (!$(e.target).form('is valid')) return;
-    const partie = this.parties[partien-1];
+    const partie = this.parties[indice];
     try {
-      this.update_scores(partien-1, partie.quiapris!, partie.avecquelappele!, calculer_points(this.joueurs.length, partie));
-      this.go_next_partie(partien);
+      this.update_scores(indice, partie.quiapris!, partie.avecquelappele!, calculer_points(this.joueurs.length, partie), partie.quelcontrat!);
+      this.go_next_partie(indice + 1);
     } catch (e) {
       console.error(e);
     }
   },
-  update_scores: function update_scores(this: VueSelf, indice: number, quiapris: Joueur, avecquelappele: Joueur, points: Points) {
-    const scoreLine: Score[] = [];
+  update_scores: function update_scores(this: VueSelf, indice: number, quiapris: Joueur, avecquelappele: Joueur, points: Points, contrat: Contrat) {
+    const scores: ScoreCol[] = [];
     for (const joueur of this.joueurs) {
-      scoreLine.push({
+      scores.push({
         score: get_score_joueur(joueur, quiapris, avecquelappele, points),
         apris: quiapris === joueur,
-        estappele: avecquelappele === joueur
+        estappele: avecquelappele === joueur,
       });
     }
-    (this.scores as any).$set(indice, scoreLine);
+    (this.scores as any).$set(indice, {
+      scores: scores,
+      contrat: {
+        label: contrat_str(contrat),
+        color: points.preneur >= 0 ? 'green' : 'red',
+      },
+    } as ScoreLine);
     this.update_score_total();
   },
   update_score_total: function update_score_total(this: VueSelf) {
     let i=0, j, score_total=[];
     for (; i<this.scores.length; i++) {
-      for (j=0; j<this.scores[i].length; j++) {
-        if (!score_total[j]) score_total.push(this.scores[i][j].score);
+      for (j=0; j<this.scores[i].scores.length; j++) {
+        if (!score_total[j]) score_total.push(this.scores[i].scores[j].score);
         else {
-          score_total[j] += this.scores[i][j].score;
+          score_total[j] += this.scores[i].scores[j].score;
         }
       }
     }
+    console.log(this.scores, score_total)
     this.scoretotal = score_total;
   },
 };
@@ -171,7 +194,7 @@ const methods = {
 type VueSelf = typeof data &
   { change_page: (nextpage: string) => void } &
   { go_next_partie: (partien: number) => void } &
-  { update_scores: (indice: number, quiapris: Joueur, avecquelappele: Joueur, points: Points) => void } &
+  { update_scores: (indice: number, quiapris: Joueur, avecquelappele: Joueur, points: Points, contrat: Contrat) => void } &
   { update_score_total: () => void };
 
 export default new Vue({

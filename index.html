@@ -74,23 +74,26 @@
     <div :class="{ active: page === 'scores' }" class="ui tab segment attached bottom" data-tab="scores">
         <h2 class="ui header">Scores</h2>
         <div>
-            <table class="striped">
+            <table class="ui striped table">
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th v-for="joueur in joueurs" track-by="$index">{{joueur}}</th>
+                        <th v-for="joueur in joueurs" track-by="$index">{{joueur.nom}}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(index, score) in scores" track-by="$index">
-                        <td>Partie n°{{ index+1 }}</td>
-                        <td v-for="score_col in score" track-by="$index" v-bind:class="{ 'bold': score_col.apris }">{{score_col.score}}</td>
+                    <tr v-for="(index, line) in scores" track-by="$index">
+                        <td>
+                          Partie n°{{ index+1 }}
+                          <span class="ui label tiny" :class="line.contrat.color">{{line.contrat.label}}</span>
+                        </td>
+                        <td v-for="score_col in line.scores" track-by="$index" v-bind:class="{ 'bold': score_col.apris }">{{score_col.score}}</td>
                     </tr>
                 </tbody>
                 <tfoot>
-                    <tr></tr>
-                        <td>Total</td>
-                        <td v-for="score_col in scoretotal" track-by="$index" v-bind:class="{ 'bold': ismax(score_col, scoretotal) }">{{score_col}}</td>
+                    <tr>
+                        <th>Total</th>
+                        <th v-for="score_col in scoretotal" track-by="$index" v-bind:class="{ 'bold': ismax(score_col, scoretotal) }">{{score_col}}</th>
                     </tr>
                 </tfoot>
             </table>
@@ -167,7 +170,7 @@
 
         <div class="ui error message"></div>
         <div class="ui bottom right sticky">
-          <button type="button" class="ui primary submit button">Valider</button>
+          <button type="submit" class="ui primary submit button">Valider</button>
         </div>
     </form>
 </div>
