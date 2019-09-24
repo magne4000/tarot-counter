@@ -40,7 +40,7 @@
     <div>
         <div class="field" v-for="(index, joueur) in joueurs" track-by="$index">
             <label>Joueur {{ index+1 }}</label>
-            <input name="joueur-{{ index+1 }}" type="text" v-model="joueur.nom"/>
+            <input name="joueur-{{ index+1 }}" type="text" v-model="joueur"/>
         </div>
         <div class="ui error message"></div>
         <button type="button" class="ui button" v-on:click="add_player">Ajouter un joueur</button>
@@ -78,7 +78,7 @@
                 <thead>
                     <tr>
                         <th>#</th>
-                        <th v-for="joueur in joueurs" track-by="$index">{{joueur.nom}}</th>
+                        <th v-for="joueur in joueurs" track-by="$index">{{joueur}}</th>
                     </tr>
                 </thead>
                 <tbody>

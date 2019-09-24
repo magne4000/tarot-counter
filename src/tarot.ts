@@ -13,9 +13,7 @@ export enum Poignee {
   Triple = 40,
 }
 
-export type Joueur = {
-  nom: string
-}
+export type Joueur = string;
 
 export type Points = {
   appele: number,
@@ -36,33 +34,6 @@ export type Partie = {
   typedepoignee2: Poignee
   chelemannoncepar?: Joueur
   chelemrealisepar?: Joueur
-}
-
-export function check(nbJoueurs: number, partie: Partial<Partie>): partie is Partie {
-  const { avecquelappele, nombredeboutsfaits, pointscomptesattaque, quiapris,
-          poignee1annonceepar, typedepoignee1, poignee2annonceepar, typedepoignee2 } = partie;
-
-  //Vérifications
-  if (!quiapris) {
-    throw new Error("Le champ “Qui à pris ?” doit être renseigné.");
-  }
-  if (!nombredeboutsfaits) {
-    throw new Error("Le champ “Nombre de bouts faits ?” doit être renseigné.");
-  }
-  if (!pointscomptesattaque) {
-    throw new Error("Le champ “Points comptés preneur” doit être renseigné.");
-  }
-  if ((poignee1annonceepar && !typedepoignee1) || (!poignee1annonceepar && typedepoignee1)) {
-    throw new Error("Poignée 1, informations incomplètes.");
-  }
-  if ((poignee2annonceepar && !typedepoignee2) || (!poignee2annonceepar && typedepoignee2)) {
-    throw new Error("Poignée 2, informations incomplètes.");
-  }
-  if (nbJoueurs === 5 && !avecquelappele){
-    throw new Error("Le champ “Qui est appelé ?” doit être renseigné.");
-  }
-
-  return true;
 }
 
 export const get_score_joueur = (joueur: Joueur, preneur: Joueur, appele: Joueur, points: Points) => {
@@ -111,9 +82,7 @@ export const get_chelem = (chelemannoncepar: Joueur | undefined, chelemrealisepa
   return 0;
 }
 
-export function calculer_points(nbJoueurs: number, partie: Partial<Partie>): Points {
-  if (!check(nbJoueurs, partie)) throw new Error('Should not happen');
-
+export function calculer_points(nbJoueurs: number, partie: Partie): Points {
   let multi = nbJoueurs === 4 ? 3 : 2;
   const { avecquelappele, chelemannoncepar, chelemrealisepar, nombredeboutsfaits,
           petitmeneauboutpar, pointscomptesattaque, quelcontrat, quiapris,

@@ -25,9 +25,9 @@ test('get_points_appel', () => {
 });
 
 test('get_points_appel', () => {
-  const J1: Joueur = { nom: 'J1' };
-  const J2: Joueur = { nom: 'J2' };
-  const J3: Joueur = { nom: 'J3' };
+  const J1: Joueur = 'J1';
+  const J2: Joueur = 'J2';
+  const J3: Joueur = 'J3';
   expect(get_petit(J1, J1, J2, Contrat.Petite)).toBe(10);
   expect(get_petit(J2, J1, J2, Contrat.Petite)).toBe(10);
   expect(get_petit(J3, J1, J2, Contrat.Petite)).toBe(-10);
@@ -43,7 +43,7 @@ test('get_points_appel', () => {
 });
 
 test('get_poignee', () => {
-  const J1: Joueur = { nom: 'J1' };
+  const J1: Joueur = 'J1';
   expect(get_poignee(J1, Poignee.Simple, 10)).toBe(20);
   expect(get_poignee(J1, Poignee.Double, 10)).toBe(30);
   expect(get_poignee(J1, Poignee.Triple, 10)).toBe(40);
@@ -66,27 +66,27 @@ test('get_chelem_calc', () => {
 
 test('get_chelem', () => {
   const spy = jest.spyOn(tarot, 'get_chelem_calc');
-  const J1: Joueur = { nom: 'J1' };
-  const J2: Joueur = { nom: 'J2' };
-  const J3: Joueur = { nom: 'J3' };
+  const J1: Joueur = 'J1';
+  const J2: Joueur = 'J2';
+  const J3: Joueur = 'J3';
   expect(get_chelem(J1, J1, J1, J2)).not.toBe(0);
   expect(spy).toHaveBeenLastCalledWith(true, false, true, false);
-  expect(get_chelem(null, J1, J1, J2)).not.toBe(0);
+  expect(get_chelem(undefined, J1, J1, J2)).not.toBe(0);
   expect(spy).toHaveBeenLastCalledWith(false, false, true, false);
   expect(get_chelem(J3, J1, J1, J2)).not.toBe(0);
   expect(spy).toHaveBeenLastCalledWith(false, true, true, false);
 
   expect(get_chelem(J1, J3, J1, J2)).not.toBe(0);
   expect(spy).toHaveBeenLastCalledWith(true, false, false, true);
-  expect(get_chelem(null, J3, J1, J2)).not.toBe(0);
+  expect(get_chelem(undefined, J3, J1, J2)).not.toBe(0);
   expect(spy).toHaveBeenLastCalledWith(false, false, false, true);
   expect(get_chelem(J3, J3, J1, J2)).not.toBe(0);
   expect(spy).toHaveBeenLastCalledWith(false, true, false, true);
 
-  expect(get_chelem(J1, null, J1, J2)).not.toBe(0);
+  expect(get_chelem(J1, undefined, J1, J2)).not.toBe(0);
   expect(spy).toHaveBeenLastCalledWith(true, false, false, false);
-  expect(get_chelem(null, null, J1, J2)).toBe(0);
-  expect(get_chelem(J3, null, J1, J2)).not.toBe(0);
+  expect(get_chelem(undefined, undefined, J1, J2)).toBe(0);
+  expect(get_chelem(J3, undefined, J1, J2)).not.toBe(0);
   expect(spy).toHaveBeenLastCalledWith(false, true, false, false);
 
   spy.mockRestore();

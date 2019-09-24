@@ -42,7 +42,7 @@ Vue.directive('form-partie', {
         avecquelappele: 'empty',
         quelcontrat: 'empty',
         pointscomptesattaque: 'integer[0..91]',
-        nombredeboutsfaits: 'integer[1..3]',
+        nombredeboutsfaits: 'integer[0..3]',
         poignee1annonceepar: 'bothEmptyOrNot[typedepoignee1]',
         typedepoignee1: 'bothEmptyOrNot[poignee1annonceepar]',
         poignee2annonceepar: 'bothEmptyOrNot[typedepoignee2]',
@@ -74,7 +74,7 @@ const JoueursComponent = Vue.extend({
   props: {
     id: String,
     parentModel: {
-      twoWay: true
+      twoWay: true,
     },
     label: String,
     joueurs: Array,
@@ -85,7 +85,7 @@ const JoueursComponent = Vue.extend({
       <select name="{{name}}" v-model="parentModel" v-dropdown>
         <option value="">Joueur</option>
         <option v-for="joueur in joueurs" :value="joueur" track-by="$index">
-          {{joueur.nom}}
+          {{joueur}}
         </option>
       </select>
     </div>`
@@ -107,7 +107,7 @@ type ScoreLine = {
   },
 }
 
-const nouveau_joueur = (): Joueur => ({ nom: '' });
+const nouveau_joueur = (): Joueur => '';
 const contrat_str = (contrat: Contrat) => {
   switch (contrat) {
     case Contrat.Petite: return 'Petite';
@@ -150,13 +150,9 @@ const methods = {
   },
   trigger_update_scores: function(this: VueSelf, e: Event, indice: number) {
     if (!$(e.target).form('is valid')) return;
-    const partie = this.parties[indice];
-    try {
-      this.update_scores(indice, partie.quiapris!, partie.avecquelappele!, calculer_points(this.joueurs.length, partie), partie.quelcontrat!);
-      this.go_next_partie(indice + 1);
-    } catch (e) {
-      console.error(e);
-    }
+    const partie = this.parties[indice] as Partie;
+    this.update_scores(indice, partie.quiapris!, partie.avecquelappele!, calculer_points(this.joueurs.length, partie), partie.quelcontrat!);
+    this.go_next_partie(indice + 1);
   },
   update_scores: function update_scores(this: VueSelf, indice: number, quiapris: Joueur, avecquelappele: Joueur, points: Points, contrat: Contrat) {
     const scores: ScoreCol[] = [];
@@ -186,7 +182,6 @@ const methods = {
         }
       }
     }
-    console.log(this.scores, score_total)
     this.scoretotal = score_total;
   },
 };
