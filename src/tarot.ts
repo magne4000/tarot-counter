@@ -66,10 +66,8 @@ export function check(nbJoueurs: number, partie: Partial<Partie>): partie is Par
 }
 
 export const get_score_joueur = (joueur: Joueur, preneur: Joueur, appele: Joueur, points: Points) => {
-  if (joueur === preneur)
-    return points.preneur;
-  if (joueur === appele)
-    return points.appele;
+  if (joueur === preneur) return points.preneur;
+  if (joueur === appele) return points.appele;
   return points.defense;
 };
 

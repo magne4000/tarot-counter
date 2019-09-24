@@ -51,21 +51,21 @@
     <!-- /navigation -->
 
     <!-- joueurs -->
-    <div class="type-interior col s12" id="joueurs" v-show="page == 0">
+    <div id="joueurs" v-show="page == 0">
+      <form class="ui form segment" v-form-joueurs v-on:submit.prevent="start">
         <div>
             <h1>Joueurs</h1>
         </div><!-- /header -->
-        <form class="ui form">
-            <div id="fieldjoueurs">
-                <div class="field" v-for="(index, joueur) in joueurs" track-by="$index">
-                    <label for="joueur_{{ index+1 }}">Joueur {{ index+1 }}</label>
-                    <input type="text" id="joueur_{{ index+1 }}" v-model="joueur"/>
-                </div>
+        <div>
+            <div class="field" v-for="(index, joueur) in joueurs" track-by="$index">
+                <label>Joueur {{ index+1 }}</label>
+                <input name="joueur-{{ index+1 }}" type="text" v-model="joueur.nom"/>
             </div>
-            <a class="ui button" v-on:click="add_player">Ajouter un joueur</a>
-        </form><!-- /content -->
-
-        <a class="ui button" v-on:click="start">Commencer</a>
+            <div class="ui error message"></div>
+            <button type="button" class="ui button" v-on:click="add_player">Ajouter un joueur</button>
+            <button type="submit" class="ui primary submit button">Commencer</button>
+        </div><!-- /content -->
+      </form>
     </div>
     <!-- /joueurs -->
 
@@ -108,7 +108,7 @@
             <joueurs label="Qui est appelé ?" id="avecquelappele" :parent-model.sync="partie.avecquelappele" :joueurs="joueurs"></joueurs>
             <!-- Quel contrat ? -->
             <div class="field">
-                <select class="ui dropdown" v-model="partie.quelcontrat" v-select number>
+                <select class="ui dropdown" v-model="partie.quelcontrat" number>
                     <option value="1">Petite</option>
                     <option value="2">Garde</option>
                     <option value="4">Garde sans</option>
@@ -132,7 +132,7 @@
             <joueurs label="Poignée 1 annoncée par ?" id="poignee1annonceepar" :parent-model.sync="partie.poignee1annonceepar" :joueurs="joueurs"></joueurs>
             <!-- Type de poignée 1 ? -->
             <div class="field">
-                <select class="ui dropdown" v-model="partie.typedepoignee1" v-select number>
+                <select class="ui dropdown" v-model="partie.typedepoignee1" number>
                     <option value="20">Simple</option>
                     <option value="30">Double</option>
                     <option value="40">Triple</option>
@@ -142,7 +142,7 @@
             <joueurs label="Poignée 2 annoncée par ?" id="poignee2annonceepar" :parent-model.sync="partie.poignee2annonceepar" :joueurs="joueurs"></joueurs>
             <!-- Type de poignée 2 ? -->
             <div class="field">
-                <select class="ui dropdown" v-model="partie.typedepoignee2" v-select number>
+                <select class="ui dropdown" v-model="partie.typedepoignee2" number>
                     <option value="20">Simple</option>
                     <option value="30">Double</option>
                     <option value="40">Triple</option>

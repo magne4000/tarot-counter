@@ -1,6 +1,30 @@
 import { calculer_points, get_score_joueur, Joueur, Partie, Points } from './tarot';
 
 declare const Vue: any;
+declare const $: any;
+
+const joueurValidation = {
+  rules: [
+    {
+      type   : 'empty',
+      prompt : 'Veuillez entrer un nom de joueur'
+    }
+  ]
+};
+
+Vue.directive('form-joueurs', {
+  bind: function () {
+    $(this.el).form({
+      fields: {
+        'joueur-1': joueurValidation,
+        'joueur-2': joueurValidation,
+        'joueur-3': joueurValidation,
+        'joueur-4': joueurValidation,
+        'joueur-5': joueurValidation,
+      }
+    });
+  },
+});
 
 const JoueursComponent = Vue.extend({
   props: {
@@ -9,14 +33,15 @@ const JoueursComponent = Vue.extend({
     twoWay: true
     },
     joueurs: Array,
-    n: Number
   },
-  template: `<fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
-    <template v-for="joueur in joueurs" track-by="$index">
-    <input type="radio" v-model="parentModel" name="{{ id }}_{{n}}" id="{{ id }}_P{{$index + 1}}_{{n}}" value="P{{$index + 1}}" v-jqm-radio>
-    <label for="{{ id }}_P{{$index + 1}}_{{n}}">{{joueur}}</label>
-    </template>
-  </fieldset>`
+  template: `<div class="">
+      <select v-model="parentModel">
+        <option v-for="joueur in joueurs" :value="joueur" track-by="$index">
+          {{joueur}}
+        </option>
+      </select>
+      <label>{{label}}</label>
+    </div>`
 });
 
 Vue.component('joueurs', JoueursComponent);
@@ -27,12 +52,14 @@ type Score = {
   estappele: boolean,
 }
 
+const nouveau_joueur = (): Joueur => ({ nom: '' });
+
 const data = {
   page: 0 as number | string,
   parties: [] as Partial<Partie>[],
   scores: [] as Score[][],
   scoretotal: [] as number[],
-  joueurs: [] as Joueur[]
+  joueurs: [nouveau_joueur(), nouveau_joueur(), nouveau_joueur()] as Joueur[]
 };
 
 const methods = {
@@ -41,7 +68,7 @@ const methods = {
   },
   add_player: function add_player(this: VueSelf) {
     if (this.joueurs.length < 5) {
-      this.joueurs.push({ nom: '' });
+      this.joueurs.push(nouveau_joueur());
       this.scoretotal.push(0);
     }
   },
@@ -54,14 +81,17 @@ const methods = {
     this.change_page(1);
   },
   change_page: function change_page(this: VueSelf, nextpage: number | string) {
-    if (nextpage > this.parties.length) {
-      this.parties.push({});
+    if (typeof nextpage === 'string') {
+      this.page = nextpage;
+      return;
     }
     if (typeof this.page === 'number' && this.page !== 0) {
       try {
         const partie = this.parties[this.page];
-        const ret = calculer_points(this.joueurs.length, partie);
-        this.update_scores(this.page, partie.quiapris!, partie.avecquelappele!, ret);
+        this.update_scores(this.page, partie.quiapris!, partie.avecquelappele!, calculer_points(this.joueurs.length, partie));
+        if (nextpage > this.parties.length) {
+          this.parties.push({});
+        }
         this.page = nextpage;
       } catch (e) {
         console.error(e);
