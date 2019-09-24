@@ -26,21 +26,35 @@ Vue.directive('form-joueurs', {
   },
 });
 
+Vue.directive('tabular', {
+  bind: function () {
+    $(this.el).find('.item').tab();
+  },
+});
+
+Vue.directive('dropdown', {
+  bind: function () {
+    $(this.el).dropdown();
+  },
+});
+
 const JoueursComponent = Vue.extend({
   props: {
     id: String,
     parentModel: {
-    twoWay: true
+      twoWay: true
     },
+    label: String,
     joueurs: Array,
   },
-  template: `<div class="">
-      <select v-model="parentModel">
+  template: `<div class="field">
+      <label>{{label}}</label>
+      <select v-model="parentModel" v-dropdown>
+        <option value="">Joueur</option>
         <option v-for="joueur in joueurs" :value="joueur" track-by="$index">
-          {{joueur}}
+          {{joueur.nom}}
         </option>
       </select>
-      <label>{{label}}</label>
     </div>`
 });
 
@@ -54,8 +68,14 @@ type Score = {
 
 const nouveau_joueur = (): Joueur => ({ nom: '' });
 
+const parse_page = (page: string) => {
+  const tuple = page.split('-');
+  if (tuple.length === 1) return [tuple[0], null] as [string, null];
+  return [tuple[0], parseInt(tuple[1], 10)] as [string, number];
+};
+
 const data = {
-  page: 0 as number | string,
+  page: 'index' as string,
   parties: [] as Partial<Partie>[],
   scores: [] as Score[][],
   scoretotal: [] as number[],
@@ -73,32 +93,24 @@ const methods = {
     }
   },
   start: function start(this: VueSelf) {
-    for (let ind in this.joueurs) {
-      if (!this.joueurs[ind]) {
-        throw new Error("Joueur " + (1+parseInt(ind, 10)) + " vide");
-      }
-    }
-    this.change_page(1);
+    this.change_page('partie-1');
   },
-  change_page: function change_page(this: VueSelf, nextpage: number | string) {
-    if (typeof nextpage === 'string') {
+  change_page: function change_page(this: VueSelf, nextpage: string) {
+    console.log(this.page, nextpage)
+    const [, currI] = parse_page(this.page);
+    if (currI === null) {
       this.page = nextpage;
-      return;
-    }
-    if (typeof this.page === 'number' && this.page !== 0) {
+    } else {
+      const partie = this.parties[currI-1];
       try {
-        const partie = this.parties[this.page];
-        this.update_scores(this.page, partie.quiapris!, partie.avecquelappele!, calculer_points(this.joueurs.length, partie));
-        if (nextpage > this.parties.length) {
-          this.parties.push({});
-        }
+        this.update_scores(currI, partie.quiapris!, partie.avecquelappele!, calculer_points(this.joueurs.length, partie));
         this.page = nextpage;
       } catch (e) {
         console.error(e);
       }
     }
   },
-  update_scores: function update_scores(this: VueSelf, page: number, quiapris: Joueur, avecquelappele: Joueur, points: Points) {
+  update_scores: function update_scores(this: VueSelf, indice: number, quiapris: Joueur, avecquelappele: Joueur, points: Points) {
     const scoreLine: Score[] = [];
     for (const joueur of this.joueurs) {
       scoreLine.push({
@@ -107,7 +119,7 @@ const methods = {
         estappele: avecquelappele === joueur
       });
     }
-    (this.scores as any).$set(page - 1, scoreLine);
+    (this.scores as any).$set(indice - 1, scoreLine);
     this.update_score_total();
   },
   update_score_total: function update_score_total(this: VueSelf) {
@@ -125,12 +137,23 @@ const methods = {
 };
 
 type VueSelf = typeof data &
-  { change_page: (nextpage: number | string) => void } &
-  { update_scores: (page: number, quiapris: Joueur, avecquelappele: Joueur, points: Points) => void } &
+  { change_page: (nextpage: string) => void } &
+  { update_scores: (indice: number, quiapris: Joueur, avecquelappele: Joueur, points: Points) => void } &
   { update_score_total: () => void };
 
 export default new Vue({
   el: '#app',
   data: data,
   methods: methods,
+  watch: {
+    page: function (this:VueSelf, val: string) {
+      const [, nextI] = parse_page(val);
+      if (nextI !== null && !this.parties[nextI]) {
+        this.parties.push({});
+      }
+      Vue.nextTick(() => {
+        $.tab('change tab', val);
+      });
+    }
+  },
 });

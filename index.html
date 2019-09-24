@@ -23,54 +23,45 @@
 </head>
 <body id="app">
 
-<div class="row">
+<div class="ui container">
     <!-- navigation -->
-    <div>
-        <ul id="dropdown1" class="dropdown-content">
-            <li v-for="(index, partie) in parties" track-by="$index"><a v-on:click="change_page(index+1)">Partie n°{{ index+1 }}</a></li>
-        </ul>
-        <nav class="nav-extended">
-            <div class="nav-wrapper">
-                <a href="#" class="brand-logo">Tarot</a>
-                <ul class="right" v-show="page !== 0">
-                    <li><a v-on:click="change_page('scores')">Scores</a></li>
-                    <!-- Dropdown Trigger -->
-                    <li>
-                        <a class="dropdown-trigger" href="#!" data-target="dropdown1">Parties<i class="material-icons right">arrow_drop_down</i></a>
-                    </li>
-                </ul>
-            </div>
-            <div class="nav-content" v-show="page > 0">
-                <span class="nav-title">Partie n°{{ page }}</span>
-                <a v-show="page == parties.length" v-on:click="change_page(page+1)" class="btn-floating btn-large halfway-fab waves-effect waves-light teal">
-                    <i class="material-icons">add</i>
-                </a>
-            </div>
-        </nav>
+    <div class="ui tabular menu attached top sticky" v-tabular v-show="page !== 'index'">
+      <a class="item" data-tab="tab-scores">Scores</a>
+      <a class="item" data-tab="tab-partie-{{parties.length}}">Partie en cours</a>
+      <div class="ui dropdown item" v-dropdown>
+        <i class="dropdown icon"></i>
+        Parties
+        <div class="menu">
+          <a
+            v-for="(index, partie) in parties"
+            track-by="$index"
+            v-on:click="change_page(index+1)"
+            data-tab="tab-partie-{{index+1}}"
+            >Partie n°{{ index+1 }}</a>
+        </div>
+      </div>
     </div>
     <!-- /navigation -->
 
     <!-- joueurs -->
-    <div id="joueurs" v-show="page == 0">
-      <form class="ui form segment" v-form-joueurs v-on:submit.prevent="start">
-        <div>
-            <h1>Joueurs</h1>
-        </div><!-- /header -->
-        <div>
-            <div class="field" v-for="(index, joueur) in joueurs" track-by="$index">
-                <label>Joueur {{ index+1 }}</label>
-                <input name="joueur-{{ index+1 }}" type="text" v-model="joueur.nom"/>
-            </div>
-            <div class="ui error message"></div>
-            <button type="button" class="ui button" v-on:click="add_player">Ajouter un joueur</button>
-            <button type="submit" class="ui primary submit button">Commencer</button>
-        </div><!-- /content -->
-      </form>
-    </div>
+    <form class="ui form segment tab active" v-form-joueurs v-on:submit.prevent="start">
+      <div>
+          <h1>Joueurs</h1>
+      </div><!-- /header -->
+      <div>
+          <div class="field" v-for="(index, joueur) in joueurs" track-by="$index">
+              <label>Joueur {{ index+1 }}</label>
+              <input name="joueur-{{ index+1 }}" type="text" v-model="joueur.nom"/>
+          </div>
+          <div class="ui error message"></div>
+          <button type="button" class="ui button" v-on:click="add_player">Ajouter un joueur</button>
+          <button type="submit" class="ui primary submit button">Commencer</button>
+      </div><!-- /content -->
+    </form>
     <!-- /joueurs -->
 
     <!-- scores -->
-    <div id="scores" class="col s12" v-show="page == 'scores'">
+    <div class="ui tab segment attached bottom">
         <div>
             <h1>Scores</h1>
         </div><!-- /header -->
@@ -100,62 +91,70 @@
 
 
     <!-- parties -->
-    <div class="partie col s12" id="partie_{{ partien }}" v-for="(partien, partie) in parties" track-by="$index" v-show="page == partien+1">
-        <form class="ui form">
-            <!-- Qui à pris ? -->
-            <joueurs label="Qui à pris ?" id="quiapris" :parent-model.sync="partie.quiapris" :joueurs="joueurs"></joueurs>
-            <!-- Qui est appelé ? -->
-            <joueurs label="Qui est appelé ?" id="avecquelappele" :parent-model.sync="partie.avecquelappele" :joueurs="joueurs"></joueurs>
-            <!-- Quel contrat ? -->
-            <div class="field">
-                <select class="ui dropdown" v-model="partie.quelcontrat" number>
-                    <option value="1">Petite</option>
-                    <option value="2">Garde</option>
-                    <option value="4">Garde sans</option>
-                    <option value="6">Garde contre</option>
-                </select>
-                <label>Quel contrat ?</label>
-            </div>
-            <!-- Points comptés attaque -->
-            <div class="field">
-                <input placeholder="91" type="number" min="0" max="91" v-model="partie.pointscomptesattaque">
-                <label>Points comptés attaque</label>
-            </div>
-            <!-- Nombre de bouts faits ? -->
-            <div class="field">
-                <input placeholder="3" type="number" min="0" max="3" v-model="partie.nombredeboutsfaits">
-                <label>Nombre de bouts faits ?</label>
-            </div>
-            <!-- Petit mené au bout par ? -->
-            <joueurs label="Petit mené au bout par ?" id="petitmeneauboutpar" :parent-model.sync="partie.petitmeneauboutpar" :joueurs="joueurs"></joueurs>
-            <!-- Poignée 1 annoncée par ? -->
-            <joueurs label="Poignée 1 annoncée par ?" id="poignee1annonceepar" :parent-model.sync="partie.poignee1annonceepar" :joueurs="joueurs"></joueurs>
-            <!-- Type de poignée 1 ? -->
-            <div class="field">
-                <select class="ui dropdown" v-model="partie.typedepoignee1" number>
-                    <option value="20">Simple</option>
-                    <option value="30">Double</option>
-                    <option value="40">Triple</option>
-                </select>
-                <label>Type de poignée 1 ?</label>
-            </div>
-            <joueurs label="Poignée 2 annoncée par ?" id="poignee2annonceepar" :parent-model.sync="partie.poignee2annonceepar" :joueurs="joueurs"></joueurs>
-            <!-- Type de poignée 2 ? -->
-            <div class="field">
-                <select class="ui dropdown" v-model="partie.typedepoignee2" number>
-                    <option value="20">Simple</option>
-                    <option value="30">Double</option>
-                    <option value="40">Triple</option>
-                </select>
-                <label>Type de poignée 2 ?</label>
-            </div>
-            <!-- Chelem annoncé par ? -->
-            <joueurs label="Chelem annoncé par ?" id="chelemannoncepar" :parent-model.sync="partie.chelemannoncepar" :joueurs="joueurs"></joueurs>
-            <!-- Chelem réalisé par ? -->
-            <joueurs label="Chelem réalisé par ?" id="chelemrealisepar" :parent-model.sync="partie.chelemrealisepar" :joueurs="joueurs"></joueurs>
-        </form><!-- /content -->
-
-    </div>
+    <form
+      class="ui form segment attached bottom tab"
+      v-form-joueurs
+      v-on:submit.prevent="start"
+      v-for="(partien, partie) in parties"
+      track-by="$index"
+      data-tab="partie-{{partien+1}}"
+      >
+        <h2 class="ui header">Partie n°{{partien+1}}</h2>
+        <!-- Qui à pris ? -->
+        <joueurs label="Qui à pris ?" id="quiapris" :parent-model.sync="partie.quiapris" :joueurs="joueurs"></joueurs>
+        <!-- Qui est appelé ? -->
+        <joueurs label="Qui est appelé ?" id="avecquelappele" :parent-model.sync="partie.avecquelappele" :joueurs="joueurs"></joueurs>
+        <!-- Quel contrat ? -->
+        <div class="field">
+            <label>Quel contrat ?</label>
+            <select class="ui dropdown" v-model="partie.quelcontrat" v-dropdown number>
+                <option value="">Contrat</option>
+                <option value="1">Petite</option>
+                <option value="2">Garde</option>
+                <option value="4">Garde sans</option>
+                <option value="6">Garde contre</option>
+            </select>
+        </div>
+        <!-- Points comptés attaque -->
+        <div class="field">
+            <label>Points comptés attaque</label>
+            <input placeholder="91" type="number" min="0" max="91" v-model="partie.pointscomptesattaque">
+        </div>
+        <!-- Nombre de bouts faits ? -->
+        <div class="field">
+            <label>Nombre de bouts faits ?</label>
+            <input placeholder="3" type="number" min="0" max="3" v-model="partie.nombredeboutsfaits">
+        </div>
+        <!-- Petit mené au bout par ? -->
+        <joueurs label="Petit mené au bout par ?" id="petitmeneauboutpar" :parent-model.sync="partie.petitmeneauboutpar" :joueurs="joueurs"></joueurs>
+        <!-- Poignée 1 annoncée par ? -->
+        <joueurs label="Poignée 1 annoncée par ?" id="poignee1annonceepar" :parent-model.sync="partie.poignee1annonceepar" :joueurs="joueurs"></joueurs>
+        <!-- Type de poignée 1 ? -->
+        <div class="field">
+            <label>Type de poignée 1 ?</label>
+            <select class="ui dropdown" v-model="partie.typedepoignee1" v-dropdown number>
+                <option value="">Poignee</option>
+                <option value="20">Simple</option>
+                <option value="30">Double</option>
+                <option value="40">Triple</option>
+            </select>
+        </div>
+        <joueurs label="Poignée 2 annoncée par ?" id="poignee2annonceepar" :parent-model.sync="partie.poignee2annonceepar" :joueurs="joueurs"></joueurs>
+        <!-- Type de poignée 2 ? -->
+        <div class="field">
+            <label>Type de poignée 2 ?</label>
+            <select class="ui dropdown" v-model="partie.typedepoignee2" v-dropdown number>
+                <option value="">Poignee</option>
+                <option value="20">Simple</option>
+                <option value="30">Double</option>
+                <option value="40">Triple</option>
+            </select>
+        </div>
+        <!-- Chelem annoncé par ? -->
+        <joueurs label="Chelem annoncé par ?" id="chelemannoncepar" :parent-model.sync="partie.chelemannoncepar" :joueurs="joueurs"></joueurs>
+        <!-- Chelem réalisé par ? -->
+        <joueurs label="Chelem réalisé par ?" id="chelemrealisepar" :parent-model.sync="partie.chelemrealisepar" :joueurs="joueurs"></joueurs>
+    </form><!-- /content -->
 </div>
 <!-- /parties -->
 <script type="text/javascript" src="semantic.min.js"></script>
