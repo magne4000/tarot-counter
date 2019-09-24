@@ -17,6 +17,23 @@ Vue.directive('form-joueurs', {
   },
 });
 
+$.fn.form.settings.rules.bothEmptyOrNot = function(value: string, otherField: string) {
+  let matchingValue: string | null = null;
+  if( $('[data-validate="'+ otherField +'"]').length > 0 ) {
+    matchingValue = $('[data-validate="'+ otherField +'"]').val();
+  }
+  else if($('#' + otherField).length > 0) {
+    matchingValue = $('#' + otherField).val();
+  }
+  else if($('[name="' + otherField +'"]').length > 0) {
+    matchingValue = $('[name="' + otherField + '"]').val();
+  }
+  else if( $('[name="' + otherField +'[]"]').length > 0 ) {
+    matchingValue = $('[name="' + otherField +'[]"]');
+  }
+  return (matchingValue && value) || (!matchingValue && !value);
+};
+
 Vue.directive('form-partie', {
   bind: function () {
     $(this.el).form({
@@ -24,15 +41,12 @@ Vue.directive('form-partie', {
         quiapris: 'empty',
         avecquelappele: 'empty',
         quelcontrat: 'empty',
-        pointscomptesattaque: 'empty',
-        nombredeboutsfaits: 'empty',
-        petitmeneauboutpar: 'empty',
-        poignee1annonceepar: 'empty',
-        typedepoignee1: 'empty',
-        poignee2annonceepar: 'empty',
-        typedepoignee2: 'empty',
-        chelemannoncepar: 'empty',
-        chelemrealisepar: 'empty',
+        pointscomptesattaque: 'integer[0..91]',
+        nombredeboutsfaits: 'integer[1..3]',
+        poignee1annonceepar: 'bothEmptyOrNot[typedepoignee1]',
+        typedepoignee1: 'bothEmptyOrNot[poignee1annonceepar]',
+        poignee2annonceepar: 'bothEmptyOrNot[typedepoignee2]',
+        typedepoignee2: 'bothEmptyOrNot[poignee2annonceepar]',
       }
     });
   },
@@ -64,10 +78,11 @@ const JoueursComponent = Vue.extend({
     },
     label: String,
     joueurs: Array,
+    name: String,
   },
   template: `<div class="field">
       <label>{{label}}</label>
-      <select v-model="parentModel" v-dropdown>
+      <select name="{{name}}" v-model="parentModel" v-dropdown>
         <option value="">Joueur</option>
         <option v-for="joueur in joueurs" :value="joueur" track-by="$index">
           {{joueur.nom}}

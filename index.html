@@ -71,7 +71,7 @@
     <!-- /navigation -->
 
     <!-- scores -->
-    <div class="ui tab segment attached bottom" data-tab="scores">
+    <div :class="{ active: page === 'scores' }" class="ui tab segment attached bottom" data-tab="scores">
         <h2 class="ui header">Scores</h2>
         <div>
             <table class="striped">
@@ -101,17 +101,19 @@
     <!-- parties -->
     <form
       class="ui form segment attached bottom tab"
+      :class="{ active: page === 'partie-' + (partien+1)}"
       v-form-partie
       v-on:submit.prevent="trigger_update_scores($event, partien)"
       v-for="(partien, partie) in parties"
       track-by="$index"
       data-tab="partie-{{partien+1}}"
+      v-if="page === 'partie-' + (partien+1)"
       >
         <h2 class="ui header">Partie n°{{partien+1}}</h2>
         <!-- Qui à pris ? -->
         <joueurs label="Qui à pris ?" name="quiapris" :parent-model.sync="partie.quiapris" :joueurs="joueurs"></joueurs>
         <!-- Qui est appelé ? -->
-        <joueurs label="Qui est appelé ?" name="avecquelappele" :parent-model.sync="partie.avecquelappele" :joueurs="joueurs"></joueurs>
+        <joueurs label="Qui est appelé ?" name="avecquelappele" :parent-model.sync="partie.avecquelappele" :joueurs="joueurs" v-if="joueurs.length === 5"></joueurs>
         <!-- Quel contrat ? -->
         <div class="field">
             <label>Quel contrat ?</label>
