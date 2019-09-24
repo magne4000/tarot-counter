@@ -3,24 +3,36 @@ import { calculer_points, get_score_joueur, Joueur, Partie, Points } from './tar
 declare const Vue: any;
 declare const $: any;
 
-const joueurValidation = {
-  rules: [
-    {
-      type   : 'empty',
-      prompt : 'Veuillez entrer un nom de joueur'
-    }
-  ]
-};
-
 Vue.directive('form-joueurs', {
   bind: function () {
     $(this.el).form({
       fields: {
-        'joueur-1': joueurValidation,
-        'joueur-2': joueurValidation,
-        'joueur-3': joueurValidation,
-        'joueur-4': joueurValidation,
-        'joueur-5': joueurValidation,
+        'joueur-1': 'empty',
+        'joueur-2': 'empty',
+        'joueur-3': 'empty',
+        'joueur-4': 'empty',
+        'joueur-5': 'empty',
+      }
+    });
+  },
+});
+
+Vue.directive('form-partie', {
+  bind: function () {
+    $(this.el).form({
+      fields: {
+        quiapris: 'empty',
+        avecquelappele: 'empty',
+        quelcontrat: 'empty',
+        pointscomptesattaque: 'empty',
+        nombredeboutsfaits: 'empty',
+        petitmeneauboutpar: 'empty',
+        poignee1annonceepar: 'empty',
+        typedepoignee1: 'empty',
+        poignee2annonceepar: 'empty',
+        typedepoignee2: 'empty',
+        chelemannoncepar: 'empty',
+        chelemrealisepar: 'empty',
       }
     });
   },
@@ -74,12 +86,6 @@ type Score = {
 
 const nouveau_joueur = (): Joueur => ({ nom: '' });
 
-const parse_page = (page: string) => {
-  const tuple = page.split('-');
-  if (tuple.length === 1) return [tuple[0], null] as [string, null];
-  return [tuple[0], parseInt(tuple[1], 10)] as [string, number];
-};
-
 const data = {
   page: 'index' as string,
   parties: [] as Partial<Partie>[],
@@ -98,16 +104,25 @@ const methods = {
       this.scoretotal.push(0);
     }
   },
-  start: function start(this: VueSelf) {
-    this.change_page('partie-1');
+  start: function start(this: VueSelf, e: Event) {
+    if (!$(e.target).form('is valid')) return;
+    this.go_next_partie(0);
   },
   change_page: function change_page(this: VueSelf, nextpage: string) {
     this.page = nextpage;
   },
-  trigger_update_scores: function(this: VueSelf, partien: number) {
+  go_next_partie: function(this: VueSelf, partien: number) {
+    if (partien >= this.parties.length) {
+      this.parties.push({});
+    }
+    this.change_page('partie-' + (partien+1));
+  },
+  trigger_update_scores: function(this: VueSelf, e: Event, partien: number) {
+    if (!$(e.target).form('is valid')) return;
     const partie = this.parties[partien-1];
     try {
       this.update_scores(partien-1, partie.quiapris!, partie.avecquelappele!, calculer_points(this.joueurs.length, partie));
+      this.go_next_partie(partien);
     } catch (e) {
       console.error(e);
     }
@@ -140,6 +155,7 @@ const methods = {
 
 type VueSelf = typeof data &
   { change_page: (nextpage: string) => void } &
+  { go_next_partie: (partien: number) => void } &
   { update_scores: (indice: number, quiapris: Joueur, avecquelappele: Joueur, points: Points) => void } &
   { update_score_total: () => void };
 
@@ -149,10 +165,6 @@ export default new Vue({
   methods: methods,
   watch: {
     page: function (this:VueSelf, val: string) {
-      const [, nextI] = parse_page(val);
-      if (nextI !== null && !this.parties[nextI]) {
-        this.parties.push({});
-      }
       Vue.nextTick(() => {
         $.tab('change tab', val);
       });
