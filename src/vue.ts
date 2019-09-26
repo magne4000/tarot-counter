@@ -142,6 +142,9 @@ const methods = {
       this.joueurs.pop();
     }
   },
+  update: function update(this: any, path: string, value: any) {
+    this.$set(path, value)
+  },
   start: function start(this: VueSelf, e: Event) {
     if (!$(e.target).form('is valid')) return;
     this.go_next_partie(0);

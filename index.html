@@ -37,13 +37,13 @@
 
 <!-- joueurs -->
 <div class="ui container">
-  <form class="ui form segment" v-form-joueurs v-on:submit.prevent="start" v-show="page === 'index'">
+  <form class="ui form segment" v-form-joueurs v-on:submit.prevent="start" v-if="page === 'index'">
     <h1 class="ui header">Tarot</h1>
     <h2 class="ui header" v-cloak>Joueurs</h2>
     <div v-cloak>
         <div class="field" v-for="(index, joueur) in joueurs" track-by="$index">
             <label>Joueur {{ index+1 }}</label>
-            <input name="joueur-{{ index+1 }}" type="text" v-model="joueur"/>
+            <input name="joueur-{{ index+1 }}" type="text" v-model="joueur" autocomplete="off"/>
         </div>
         <div class="ui error message"></div>
         <button type="button" class="ui button" v-on:click="add_player" :disabled="joueurs.length >= 5">Ajouter un joueur</button>
@@ -137,14 +137,35 @@
             </select>
         </div>
         <!-- Points comptés attaque -->
-        <div class="field">
+        <div class="fields">
+          <div class="eight wide field">
             <label>Points comptés attaque</label>
-            <input placeholder="91" type="number" min="0" max="91" name="pointscomptesattaque" v-model="partie.pointscomptesattaque">
+            <input
+              autocomplete="off"
+              placeholder="91"
+              type="number"
+              min="0"
+              max="91"
+              name="pointscomptesattaque"
+              v-model="partie.pointscomptesattaque">
+          </div>
+          <div class="eight wide field">
+            <label>Points comptés défense</label>
+            <input
+              autocomplete="off"
+              placeholder="91"
+              type="number"
+              min="0"
+              max="91"
+              name="pointscomptesdefense"
+              :value="91 - partie.pointscomptesattaque"
+              v-on:input="update('parties['+partien+'].pointscomptesattaque', 91 - $event.target.value)">
+          </div>
         </div>
         <!-- Nombre de bouts faits ? -->
         <div class="field">
             <label>Nombre de bouts faits ?</label>
-            <input placeholder="3" type="number" min="0" max="3" name="nombredeboutsfaits" v-model="partie.nombredeboutsfaits">
+            <input autocomplete="off" placeholder="3" type="number" min="0" max="3" name="nombredeboutsfaits" v-model="partie.nombredeboutsfaits">
         </div>
         <!-- Petit mené au bout par ? -->
         <joueurs label="Petit mené au bout par ?" name="petitmeneauboutpar" :parent-model.sync="partie.petitmeneauboutpar" :joueurs="joueurs"></joueurs>
