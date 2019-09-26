@@ -135,7 +135,11 @@ const methods = {
   add_player: function add_player(this: VueSelf) {
     if (this.joueurs.length < 5) {
       this.joueurs.push(nouveau_joueur());
-      this.scoretotal.push(0);
+    }
+  },
+  del_player: function del_player(this: VueSelf) {
+    if (this.joueurs.length > 3) {
+      this.joueurs.pop();
     }
   },
   start: function start(this: VueSelf, e: Event) {

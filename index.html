@@ -28,6 +28,9 @@
 .ui.sticky.bottom {
   bottom: 15px;
 }
+[v-cloak] {
+  display: none;
+}
 </style>
 </head>
 <body id="app">
@@ -36,14 +39,15 @@
 <div class="ui container">
   <form class="ui form segment" v-form-joueurs v-on:submit.prevent="start" v-show="page === 'index'">
     <h1 class="ui header">Tarot</h1>
-    <h2 class="ui header">Joueurs</h2>
-    <div>
+    <h2 class="ui header" v-cloak>Joueurs</h2>
+    <div v-cloak>
         <div class="field" v-for="(index, joueur) in joueurs" track-by="$index">
             <label>Joueur {{ index+1 }}</label>
             <input name="joueur-{{ index+1 }}" type="text" v-model="joueur"/>
         </div>
         <div class="ui error message"></div>
-        <button type="button" class="ui button" v-on:click="add_player">Ajouter un joueur</button>
+        <button type="button" class="ui button" v-on:click="add_player" :disabled="joueurs.length >= 5">Ajouter un joueur</button>
+        <button type="button" class="ui button" v-on:click="del_player" :disabled="joueurs.length <= 3">Retirer un joueur</button>
         <button type="submit" class="ui primary submit button">Commencer</button>
     </div>
   </form>
@@ -52,7 +56,7 @@
 
 <div class="ui container">
     <!-- navigation -->
-    <div class="ui tabular menu attached top" v-tabular="parties" v-show="page !== 'index'">
+    <div class="ui tabular menu attached top" v-tabular="parties" v-show="page !== 'index'" v-cloak>
       <a class="item" :class="{ active: page === 'scores' }" v-on:click="change_page('scores')">Scores</a>
       <a class="item" :class="{ active: page.startsWith('partie-') }" v-on:click="change_page('partie-' + parties.length)">Partie en cours</a>
       <div class="ui simple dropdown item" v-dropdown>
@@ -71,7 +75,7 @@
     <!-- /navigation -->
 
     <!-- scores -->
-    <div :class="{ active: page === 'scores' }" class="ui tab segment attached bottom" data-tab="scores">
+    <div :class="{ active: page === 'scores' }" class="ui tab segment attached bottom" data-tab="scores" v-cloak>
         <h2 class="ui header">Scores</h2>
         <div>
             <table class="ui striped table">
@@ -114,6 +118,7 @@
       track-by="$index"
       data-tab="partie-{{partien+1}}"
       v-if="page === 'partie-' + (partien+1)"
+      v-cloak
       >
         <h2 class="ui header">Partie n°{{partien+1}}</h2>
         <!-- Qui à pris ? -->

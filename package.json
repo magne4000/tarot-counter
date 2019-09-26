@@ -5,7 +5,8 @@
   "author": "magne4000",
   "scripts": {
     "test": "jest",
-    "build": "npx ttsc --skipLibCheck -p ."
+    "build": "npx ttsc --skipLibCheck -p .",
+    "build:watch": "npm run build -- --watch"
   },
   "dependencies": {},
   "devDependencies": {
