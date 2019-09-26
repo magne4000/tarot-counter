@@ -121,6 +121,9 @@ const contrat_str = (contrat: Contrat) => {
 }
 
 const data = {
+  last: {
+    joueurs: localStorage.joueurs ? JSON.parse(localStorage.joueurs) : false
+  },
   page: 'index' as string,
   parties: [] as Partial<Partie>[],
   scores: [] as ScoreLine[],
@@ -131,6 +134,23 @@ const data = {
 const methods = {
   ismax: function ismax(value: number, values: number[]) {
     return Math.max(...values) === value;
+  },
+  clear_derniere_partie: function clear_derniere_partie(this: VueSelf) {
+    localStorage.clear();
+  },
+  reprendre_derniere_partie: function reprendre_derniere_partie(this: VueSelf) {
+    const parties = JSON.parse(localStorage.parties);
+    const page = 'partie-' + parties.length;
+    const joueurs = JSON.parse(localStorage.joueurs)
+    const scores = JSON.parse(localStorage.scores);
+    localStorage.clear();
+    this.last.joueurs = false;
+
+    this.joueurs = joueurs;
+    this.parties = parties;
+    this.scores = scores;
+    this.update_score_total();
+    this.page = page;
   },
   add_player: function add_player(this: VueSelf) {
     if (this.joueurs.length < 5) {
@@ -147,6 +167,7 @@ const methods = {
   },
   start: function start(this: VueSelf, e: Event) {
     if (!$(e.target).form('is valid')) return;
+    this.last.joueurs = false;
     this.go_next_partie(0);
   },
   change_page: function change_page(this: VueSelf, nextpage: string) {
@@ -211,6 +232,25 @@ export default new Vue({
       Vue.nextTick(() => {
         $.tab('change tab', val);
       });
-    }
+      localStorage.page = val;
+    },
+    parties: {
+      handler: function (val: Partie[]) {
+        localStorage.parties = JSON.stringify(val);
+      },
+      deep: true,
+    },
+    joueurs: {
+      handler: function (val: Joueur[]) {
+        localStorage.joueurs = JSON.stringify(val);
+      },
+      deep: true,
+    },
+    scores: {
+      handler: function (val: ScoreLine[]) {
+        localStorage.scores = JSON.stringify(val);
+      },
+      deep: true,
+    },
   },
 });

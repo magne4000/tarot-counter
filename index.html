@@ -35,10 +35,21 @@
 </head>
 <body id="app">
 
-<!-- joueurs -->
 <div class="ui container">
+  <h1 class="ui header" v-if="page === 'index'">Tarot</h1>
+
+  <!-- dernière partie -->
+  <div class="ui segment" v-if="last.joueurs">
+    Dernière partie avec
+    <a class="ui horizontal label" v-for="joueur in last.joueurs" track-by="$index">
+      {{joueur}}
+    </a>
+    <button type="button" class="ui button primary" v-on:click="reprendre_derniere_partie">Reprendre</button>
+  </div>
+  <!-- /dernière partie -->
+
+  <!-- joueurs -->
   <form class="ui form segment" v-form-joueurs v-on:submit.prevent="start" v-if="page === 'index'">
-    <h1 class="ui header">Tarot</h1>
     <h2 class="ui header" v-cloak>Joueurs</h2>
     <div v-cloak>
         <div class="field" v-for="(index, joueur) in joueurs" track-by="$index">
@@ -51,8 +62,8 @@
         <button type="submit" class="ui primary submit button">Commencer</button>
     </div>
   </form>
+  <!-- /joueurs -->
 </div>
-<!-- /joueurs -->
 
 <div class="ui container">
     <!-- navigation -->
