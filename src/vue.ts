@@ -137,20 +137,22 @@ const methods = {
   },
   clear_derniere_partie: function clear_derniere_partie(this: VueSelf) {
     localStorage.clear();
+    this.last.joueurs = false;
   },
   reprendre_derniere_partie: function reprendre_derniere_partie(this: VueSelf) {
-    const parties = JSON.parse(localStorage.parties);
+    const parties = localStorage.parties ? JSON.parse(localStorage.parties) : this.parties;
     const page = 'partie-' + parties.length;
-    const joueurs = JSON.parse(localStorage.joueurs)
-    const scores = JSON.parse(localStorage.scores);
-    localStorage.clear();
-    this.last.joueurs = false;
+    const joueurs = localStorage.joueurs ? JSON.parse(localStorage.joueurs) : this.joueurs;
+    const scores = localStorage.scores ? JSON.parse(localStorage.scores) : this.scores;
+    this.clear_derniere_partie();
 
-    this.joueurs = joueurs;
-    this.parties = parties;
-    this.scores = scores;
-    this.update_score_total();
-    this.page = page;
+    Vue.nextTick(() => {
+      this.joueurs = joueurs;
+      this.parties = parties;
+      this.scores = scores;
+      this.update_score_total();
+      this.page = page;
+    });
   },
   add_player: function add_player(this: VueSelf) {
     if (this.joueurs.length < 5) {
@@ -221,7 +223,8 @@ type VueSelf = typeof data &
   { change_page: (nextpage: string) => void } &
   { go_next_partie: (partien: number) => void } &
   { update_scores: (indice: number, quiapris: Joueur, avecquelappele: Joueur, points: Points, contrat: Contrat) => void } &
-  { update_score_total: () => void };
+  { update_score_total: () => void } &
+  { clear_derniere_partie: () => void };
 
 export default new Vue({
   el: '#app',
@@ -235,19 +238,19 @@ export default new Vue({
       localStorage.page = val;
     },
     parties: {
-      handler: function (val: Partie[]) {
+      handler: function (this:VueSelf, val: Partie[]) {
         localStorage.parties = JSON.stringify(val);
       },
       deep: true,
     },
     joueurs: {
-      handler: function (val: Joueur[]) {
+      handler: function (this:VueSelf, val: Joueur[]) {
         localStorage.joueurs = JSON.stringify(val);
       },
       deep: true,
     },
     scores: {
-      handler: function (val: ScoreLine[]) {
+      handler: function (this:VueSelf, val: ScoreLine[]) {
         localStorage.scores = JSON.stringify(val);
       },
       deep: true,

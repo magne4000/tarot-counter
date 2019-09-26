@@ -45,11 +45,12 @@
       {{joueur}}
     </a>
     <button type="button" class="ui button primary" v-on:click="reprendre_derniere_partie">Reprendre</button>
+    <button type="button" class="ui button secondary" v-on:click="clear_derniere_partie">Nouvelle partie</button>
   </div>
   <!-- /dernière partie -->
 
   <!-- joueurs -->
-  <form class="ui form segment" v-form-joueurs v-on:submit.prevent="start" v-if="page === 'index'">
+  <form class="ui form segment" v-form-joueurs v-on:submit.prevent="start" v-if="page === 'index' && !last.joueurs">
     <h2 class="ui header" v-cloak>Joueurs</h2>
     <div v-cloak>
         <div class="field" v-for="(index, joueur) in joueurs" track-by="$index">
