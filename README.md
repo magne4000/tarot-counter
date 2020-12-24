@@ -1,6 +1,6 @@
 # Compteur de points au tarot
 ## Demo
-https://ssl.getonmyhor.se/tarot/
+https://getonmyhor.se/tarot/
 
 ## Installation
 - Télécharger le dernier zip https://github.com/magne4000/tarot-counter/releases
