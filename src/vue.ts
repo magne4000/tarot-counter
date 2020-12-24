@@ -209,7 +209,7 @@ const methods = {
     let i=0, j, score_total=[];
     for (; i<this.scores.length; i++) {
       for (j=0; j<this.scores[i].scores.length; j++) {
-        if (!score_total[j]) score_total.push(this.scores[i].scores[j].score);
+        if (typeof score_total[j] !== 'number') score_total.push(this.scores[i].scores[j].score);
         else {
           score_total[j] += this.scores[i].scores[j].score;
         }
