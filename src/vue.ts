@@ -54,16 +54,13 @@ Vue.directive('form-partie', {
 
 Vue.directive('tabular', {
   bind: function () {
-    $(this.el).find('.item').tab();
-  },
-  update: function () {
-    $(this.el).find('.item').tab('refresh');
-  },
+    $(this.el).find('.item').tab({ deactivate: 'all', autoTabActivation: false });
+  }
 });
 
 Vue.directive('dropdown', {
   bind: function () {
-    $(this.el).dropdown();
+    $(this.el).dropdown({ action: 'activate' });
   },
   update: function (value: any) {
     if (value !== undefined) {
@@ -200,7 +197,7 @@ const methods = {
       scores: scores,
       contrat: {
         label: contrat_str(contrat),
-        color: points.preneur >= 0 ? 'green' : 'red',
+        color: points.preneur >= 0 ? 'positive' : 'negative',
       },
     } as ScoreLine);
     this.update_score_total();
