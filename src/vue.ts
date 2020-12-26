@@ -198,7 +198,7 @@ const methods = {
       scores: scores,
       contrat: {
         label: contrat_str(contrat),
-        color: points.preneur >= 0 ? 'positive' : 'negative',
+        color: points.preneur >= 0 ? 'green' : 'red',
       },
     } as ScoreLine);
     this.update_score_total();
