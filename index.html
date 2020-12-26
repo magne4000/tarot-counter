@@ -39,11 +39,13 @@
   <h1 class="ui header" v-if="page === 'index'">Tarot</h1>
 
   <!-- dernière partie -->
-  <div class="ui segment" v-if="last.joueurs">
-    Dernière partie avec
-    <a class="ui horizontal label" v-for="joueur in last.joueurs" track-by="$index">
-      {{joueur}}
-    </a>
+  <div class="ui segment form" v-if="last.joueurs">
+    <div class="field">
+      Dernière partie avec
+      <a class="ui horizontal label" v-for="joueur in last.joueurs" track-by="$index">
+        {{joueur}}
+      </a>
+    </div>
     <button type="button" class="ui button primary" v-on:click="reprendre_derniere_partie">Reprendre</button>
     <button type="button" class="ui button secondary" v-on:click="clear_derniere_partie">Nouvelle partie</button>
   </div>

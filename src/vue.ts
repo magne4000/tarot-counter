@@ -180,6 +180,7 @@ const methods = {
   },
   trigger_update_scores: function(this: VueSelf, e: Event, indice: number) {
     if (!$(e.target).form('is valid')) return;
+    window.scrollTo(0, 0);
     const partie = this.parties[indice] as Partie;
     this.update_scores(indice, partie.quiapris!, partie.avecquelappele!, calculer_points(this.joueurs.length, partie), partie.quelcontrat!);
     this.go_next_partie(indice + 1);
